@@ -39,7 +39,7 @@ public class UserService {
         newUser.setRoles(roles);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
-        Optional<Role> defaultRole = roleRepository.findByName("Buyer");
+        Optional<Role> defaultRole = roleRepository.findByName("ATTENDEE");
         if (defaultRole.isPresent()) {
             newUser.getRoles().add(defaultRole.get());
         } else {

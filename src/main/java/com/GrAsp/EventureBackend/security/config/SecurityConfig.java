@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/register").permitAll()
                         .requestMatchers("/api/v1/user").permitAll()
-
+                        .requestMatchers("/api/v1/test/**").permitAll()
                         //  Define rest of the routes to be private
                         .anyRequest().authenticated()
                 )

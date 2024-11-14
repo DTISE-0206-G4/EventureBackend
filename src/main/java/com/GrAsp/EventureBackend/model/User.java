@@ -7,10 +7,11 @@ import org.hibernate.annotations.ColumnDefault;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "user",schema = "public")
+@Table(name = "user", schema = "public")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,10 @@ public class User {
 
     @Column(name = "password", length = 255)
     private String password;
+
+    @Column(name = "referral_code", length = 255)
+    private String referralCode;
+
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -45,7 +50,13 @@ public class User {
     protected void onCreate() {
         createdAt = OffsetDateTime.now();
         updatedAt = OffsetDateTime.now();
+        referralCode = UUID.randomUUID().toString();
     }
+
+//    @PrePersist
+//    public void generateUniqueString() {
+//        referralCode = UUID.randomUUID().toString();
+//    }
 
     @PreUpdate
     protected void onUpdate() {
