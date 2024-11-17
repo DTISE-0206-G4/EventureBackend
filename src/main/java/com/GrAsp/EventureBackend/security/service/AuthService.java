@@ -33,4 +33,15 @@ public class AuthService {
             throw new RuntimeException("Wrong credentials");
         }
     }
+
+    public boolean checkPassword(String email,String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+            return authentication.isAuthenticated();
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Wrong password");
+        }
+    }
 }
