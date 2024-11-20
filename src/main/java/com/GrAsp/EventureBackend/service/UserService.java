@@ -75,7 +75,7 @@ public class UserService {
                     userDiscountReferrer.setPercentage(false);
                     userDiscountRepository.save(userDiscountReferrer);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException("Can't save user, " + e.getMessage());
                 }
             } else {
                 throw new RuntimeException("Referral code not found");
@@ -84,7 +84,7 @@ public class UserService {
             try {
                 newUser = userRepository.save(newUser);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException("Can't save user, " + e.getMessage());
             }
         }
 

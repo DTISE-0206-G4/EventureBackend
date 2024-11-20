@@ -50,11 +50,16 @@ public class UserDiscount {
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "expired_at")
+    private OffsetDateTime expiredAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now();
         updatedAt = OffsetDateTime.now();
         code = UUID.randomUUID().toString();
+        expiredAt = OffsetDateTime.now().plusDays(90);
     }
 
     @PreUpdate
