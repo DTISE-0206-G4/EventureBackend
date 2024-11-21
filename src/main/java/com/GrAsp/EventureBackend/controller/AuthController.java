@@ -3,6 +3,7 @@ package com.GrAsp.EventureBackend.controller;
 import com.GrAsp.EventureBackend.common.response.ApiResponse;
 import com.GrAsp.EventureBackend.dto.ChangePasswordRequest;
 import com.GrAsp.EventureBackend.dto.LoginRequest;
+import com.GrAsp.EventureBackend.dto.LogoutRequest;
 import com.GrAsp.EventureBackend.dto.RegisterRequest;
 import com.GrAsp.EventureBackend.security.config.Claims;
 import com.GrAsp.EventureBackend.security.service.AuthService;
@@ -45,6 +46,13 @@ public class AuthController {
             return ApiResponse.failedResponse("Failed to change password");
         }
         return ApiResponse.successfulResponse("Password changed successfully");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@Validated @RequestBody LogoutRequest req) {
+        var accessToken = Claims.getJwtTokenString();
+        req.setAccessToken(accessToken);
+        return ApiResponse.successfulResponse("Logout successful", authService.logoutUser(req));
     }
 
 }

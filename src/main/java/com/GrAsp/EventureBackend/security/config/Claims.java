@@ -50,4 +50,15 @@ public class Claims {
         }
         throw new IllegalStateException("User ID not found in JWT");
     }
+
+    public static String getJwtTokenString() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
+            throw new IllegalStateException("JWT not found in SecurityContext");
+        }
+
+        return jwt.getTokenValue();
+    }
 }

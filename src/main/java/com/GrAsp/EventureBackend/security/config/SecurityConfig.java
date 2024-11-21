@@ -1,5 +1,6 @@
 package com.GrAsp.EventureBackend.security.config;
 
+import com.GrAsp.EventureBackend.security.filters.TokenBlacklist;
 import com.GrAsp.EventureBackend.security.service.CustomUserDetailsService;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.SecretKey;
@@ -36,7 +38,7 @@ public class SecurityConfig {
     private final RsaKeyConfigProperties rsaKeyConfigProperties;
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
-
+    private final TokenBlacklist tokenBlacklistFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -56,6 +58,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.decoder(jwtDecoder())))
+                .addFilterAfter(tokenBlacklistFilter, BearerTokenAuthenticationFilter.class)
                 .userDetailsService(customUserDetailsService)
                 .build();
     }

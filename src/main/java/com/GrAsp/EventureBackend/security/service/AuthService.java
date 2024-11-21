@@ -2,20 +2,29 @@ package com.GrAsp.EventureBackend.security.service;
 
 import com.GrAsp.EventureBackend.dto.LoginRequest;
 import com.GrAsp.EventureBackend.dto.LoginResponse;
+import com.GrAsp.EventureBackend.dto.LogoutRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final JwtDecoder jwtDecoder;
+    private final BlacklistService blacklistService;
 
-    public AuthService(AuthenticationManager authenticationManager, TokenService tokenService) {
+    public AuthService(AuthenticationManager authenticationManager, TokenService tokenService, JwtDecoder jwtDecoder, BlacklistService blacklistService) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.jwtDecoder = jwtDecoder;
+        this.blacklistService = blacklistService;
     }
 
     public LoginResponse authenticateUser(LoginRequest req) {
@@ -44,4 +53,14 @@ public class AuthService {
             throw new RuntimeException("Wrong password");
         }
     }
+
+    public Boolean logoutUser(LogoutRequest req) {
+        Jwt accessToken = jwtDecoder.decode(req.getAccessToken());
+//        Jwt refreshToken = jwtDecoder.decode(req.getRefreshToken());
+
+        blacklistService.blacklistToken(accessToken.getTokenValue(), Objects.requireNonNull(accessToken.getExpiresAt()).toString());
+//        TokenBlacklistUsecase.blacklistToken(refreshToken.getTokenValue(), Objects.requireNonNull(refreshToken.getExpiresAt()).toString());
+        return Boolean.TRUE;
+    }
+
 }
