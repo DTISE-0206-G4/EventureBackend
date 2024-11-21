@@ -45,15 +45,21 @@ public class UserService {
         Set<Role> roles = new HashSet<>();
         newUser.setRoles(roles);
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        Optional<Role> defaultRole;
 
-        Optional<Role> defaultRole = roleRepository.findByName("ATTENDEE");
+        if (req.getRole() != null) {
+            defaultRole = roleRepository.findByName(req.getRole());
+        } else {
+            defaultRole = roleRepository.findByName("ATTENDEE");
+        }
+
         if (defaultRole.isPresent()) {
             newUser.getRoles().add(defaultRole.get());
         } else {
             throw new RuntimeException("Default role not found");
         }
 
-        if (req.getReferralCode() != null) {
+        if (req.getReferralCode() != null && !req.getReferralCode().isEmpty()) {
             Optional<User> referrer = userRepository.findByReferralCode(req.getReferralCode());
             if (referrer.isPresent()) {
                 newUser.setReferrerId(referrer.get().getId());
