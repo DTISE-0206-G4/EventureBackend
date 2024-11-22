@@ -39,7 +39,7 @@ public class AuthController {
         String email = Claims.getEmailFromJwt();
         boolean isPasswordCorrect = authService.checkPassword(email, req.getOldPassword());
         if (!isPasswordCorrect) {
-            return ResponseEntity.badRequest().body("Old password is incorrect");
+            return ApiResponse.failedResponse("Old password is incorrect");
         }
         boolean result = userService.changePassword(req, email);
         if (!result) {
