@@ -12,17 +12,15 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "role", schema = "public")
-public class Role {
+@Table(name = "category", schema = "public")
+public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_id_gen")
-    @SequenceGenerator(name = "role_id_gen", sequenceName = "role_id_seq", allocationSize = 1)
+    @ColumnDefault("nextval('category_id_seq')")
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
-    @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @NotNull

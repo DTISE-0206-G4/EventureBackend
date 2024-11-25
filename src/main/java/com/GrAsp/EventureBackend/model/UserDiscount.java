@@ -19,8 +19,8 @@ public class UserDiscount {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @Column(name = "transaction_id")
-    private Integer transactionId;
+//    @Column(name = "transaction_id")
+//    private Integer transactionId;
 
     @Column(name = "title", length = 255, nullable = false)
     private String name;
@@ -53,6 +53,9 @@ public class UserDiscount {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expired_at")
     private OffsetDateTime expiredAt;
+
+    @Column(name = "is_used")
+    private Boolean isUsed;
 
     @PrePersist
     protected void onCreate() {

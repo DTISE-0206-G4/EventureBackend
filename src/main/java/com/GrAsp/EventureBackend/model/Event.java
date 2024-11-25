@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
@@ -16,6 +18,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "event", schema = "public")
+@SQLRestriction("deleted_at IS NULL")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_id_gen")
@@ -50,19 +53,21 @@ public class Event {
     private String description;
 
     @NotNull
-    @Column(name = "start_date", nullable = false)
-    private OffsetTime startDate;
+    @Column(name = "start_time", nullable = false)
+    private OffsetDateTime startTime;
 
     @NotNull
-    @Column(name = "end_date", nullable = false)
-    private OffsetTime endDate;
+    @Column(name = "end_time", nullable = false)
+    private OffsetDateTime endTime;
 
     @NotNull
     @Column(name = "location", nullable = false, length = Integer.MAX_VALUE)
     private String location;
 
-    @Column(name = "categories", length = Integer.MAX_VALUE)
-    private String categories;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "event_categories", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private Set<Category> categories = new HashSet<>();
+
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -72,9 +77,9 @@ public class Event {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
+
 
     @PrePersist
     protected void onCreate() {

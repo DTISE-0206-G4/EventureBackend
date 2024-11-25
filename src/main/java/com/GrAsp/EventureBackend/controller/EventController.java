@@ -1,17 +1,14 @@
 package com.GrAsp.EventureBackend.controller;
 
 import com.GrAsp.EventureBackend.common.response.ApiResponse;
-import com.GrAsp.EventureBackend.dto.AddEventRequest;
+import com.GrAsp.EventureBackend.dto.CreateEventRequest;
 import com.GrAsp.EventureBackend.model.Event;
-import com.GrAsp.EventureBackend.model.UserDiscount;
-import com.GrAsp.EventureBackend.repository.EventRepository;
 import com.GrAsp.EventureBackend.security.config.Claims;
 import com.GrAsp.EventureBackend.service.EventService;
 import com.GrAsp.EventureBackend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,8 +27,18 @@ public class EventController {
         return ApiResponse.successfulResponse("Events retrieved successfully", eventService.getAllEvents());
     }
 
+    @GetMapping("/my_event")
+    public ResponseEntity<?> getEventsForOrganizer() {
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        return ApiResponse.successfulResponse("Events retrieved successfully", eventService.getEventsByUserId(user.getId()));
+    }
+
     @PostMapping()
-    public ResponseEntity<?> addEvent(@RequestBody AddEventRequest event) {
+    public ResponseEntity<?> addEvent(@RequestBody CreateEventRequest event) {
         String email = Claims.getEmailFromJwt();
         var user = userService.getProfile(email);
         if (user == null) {
@@ -43,10 +50,6 @@ public class EventController {
         }
         return ApiResponse.successfulResponse("Event added successfully", result);
     }
-//        List<UserDiscount> userDiscounts = userDiscountService.getUserDiscounts(user.getId());
-
-//        return ApiResponse.successfulResponse("");
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable int id) {
@@ -55,5 +58,17 @@ public class EventController {
             return ApiResponse.successfulResponse("Event retrieved successfully", event);
         }
         return ApiResponse.failedResponse("Event not found");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest event) {
+        Event updatedEvent= eventService.updateEvent(event,id);
+        return ApiResponse.successfulResponse("Event updated successfully", updatedEvent);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEvent(@PathVariable int id) {
+        eventService.deleteEvent(id);
+        return ApiResponse.successfulResponse("Event deleted successfully");
     }
 }

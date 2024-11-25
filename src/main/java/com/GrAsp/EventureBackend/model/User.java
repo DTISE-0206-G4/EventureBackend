@@ -1,7 +1,10 @@
 package com.GrAsp.EventureBackend.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.OffsetDateTime;
@@ -9,44 +12,57 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "user", schema = "public")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_gen")
+    @SequenceGenerator(name = "user_id_gen", sequenceName = "user_id_seq", allocationSize = 1)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name", length = 255)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email", length = 255)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password", length = 255)
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "profile_image", length = 255)
-    private String profileImage;
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "referral_code", nullable = false)
+    private String referralCode;
 
-    @Column(name = "description")
+    @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @Column(name = "referral_code", length = 255)
-    private String referralCode;
+    @Size(max = 255)
+    @Column(name = "profile_image")
+    private String profileImage;
 
     @Column(name = "referrer_id")
     private Integer referrerId;
-
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
+    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
@@ -71,4 +87,5 @@ public class User {
     protected void onRemove() {
         deletedAt = OffsetDateTime.now();
     }
+
 }

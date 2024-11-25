@@ -30,7 +30,7 @@ public class UserController {
         return ApiResponse.successfulResponse("User found", user);
     }
 
-    @PostMapping()
+    @PutMapping()
     public ResponseEntity<?> editUserProfile(@RequestBody EditUserProfileRequest req) {
         String email = Claims.getEmailFromJwt();
         var user = userService.getProfile(email);
