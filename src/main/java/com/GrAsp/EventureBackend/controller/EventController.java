@@ -46,9 +46,7 @@ public class EventController {
         Sort sort = Sort.by(direction, orderColumn != null ? orderColumn : "id");
         Pageable pageable = PageRequest.of(page, length, sort);
         Page<Event> eventPage = eventService.getEvents(pageable, search);
-//        List<Event> events = eventService.getEvents(start, length, search);
         long totalRecords = eventService.count();
-//        long filteredRecords = eventService.countFiltered(search);
         Map<String, Object> response = new HashMap<>();
         response.put("draw", draw);
         response.put("recordsTotal", totalRecords);
