@@ -7,6 +7,8 @@ import com.GrAsp.EventureBackend.repository.CategoryRepository;
 import com.GrAsp.EventureBackend.repository.EventRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -23,6 +25,26 @@ public class EventService {
 
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
+    }
+
+    public Page<Event> getEvents(Pageable pageable, String search) {
+        if (search != null && !search.isEmpty()) {
+            return eventRepository.findEventsWithSearch(search, pageable);
+        } else {
+            return eventRepository.findAllEvents(pageable);
+        }
+    }
+
+    public long count() {
+        return eventRepository.count();
+    }
+
+    public long countFiltered(String search) {
+        if (search != null && !search.isEmpty()) {
+            return eventRepository.countEventsWithSearch(search);
+        } else {
+            return eventRepository.count();
+        }
     }
 
     public List<Event> getEventsByUserId(int id) {
@@ -100,7 +122,7 @@ public class EventService {
     }
 
     public void deleteEvent(Integer id) {
-        try{
+        try {
             Optional<Event> event = eventRepository.findById(id);
             if (event.isPresent()) {
                 Event deletedEvent = event.get();
@@ -109,7 +131,7 @@ public class EventService {
             } else {
                 throw new RuntimeException("Event not found");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Can't delete event, " + e.getMessage());
         }
 

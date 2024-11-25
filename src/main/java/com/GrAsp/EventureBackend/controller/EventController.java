@@ -6,9 +6,16 @@ import com.GrAsp.EventureBackend.model.Event;
 import com.GrAsp.EventureBackend.security.config.Claims;
 import com.GrAsp.EventureBackend.service.EventService;
 import com.GrAsp.EventureBackend.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,15 +34,38 @@ public class EventController {
         return ApiResponse.successfulResponse("Events retrieved successfully", eventService.getAllEvents());
     }
 
-    @GetMapping("/my_event")
-    public ResponseEntity<?> getEventsForOrganizer() {
-        String email = Claims.getEmailFromJwt();
-        var user = userService.getProfile(email);
-        if (user == null) {
-            return ApiResponse.failedResponse("User not found");
-        }
-        return ApiResponse.successfulResponse("Events retrieved successfully", eventService.getEventsByUserId(user.getId()));
+    @GetMapping("/datatable")
+    public ResponseEntity<?> getEventsDatatable(@RequestParam int draw,
+                                                @RequestParam int start,
+                                                @RequestParam int length,
+                                                @RequestParam(required = false) String search,
+                                                @RequestParam(required = false) String orderColumn,
+                                                @RequestParam(required = false) String orderDir) {
+        int page = start / length;
+        Sort.Direction direction = Sort.Direction.fromString(orderDir != null ? orderDir : "asc");
+        Sort sort = Sort.by(direction, orderColumn != null ? orderColumn : "id");
+        Pageable pageable = PageRequest.of(page, length, sort);
+        Page<Event> eventPage = eventService.getEvents(pageable, search);
+//        List<Event> events = eventService.getEvents(start, length, search);
+        long totalRecords = eventService.count();
+//        long filteredRecords = eventService.countFiltered(search);
+        Map<String, Object> response = new HashMap<>();
+        response.put("draw", draw);
+        response.put("recordsTotal", totalRecords);
+        response.put("recordsFiltered", eventPage.getTotalElements());
+        response.put("data", eventPage.getContent());
+        return ApiResponse.successfulResponse("Events retrieved successfully", response);
     }
+
+//    @GetMapping("/my_event")
+//    public ResponseEntity<?> getEventsForOrganizer() {
+//        String email = Claims.getEmailFromJwt();
+//        var user = userService.getProfile(email);
+//        if (user == null) {
+//            return ApiResponse.failedResponse("User not found");
+//        }
+//        return ApiResponse.successfulResponse("Events retrieved successfully", eventService.getEventsByUserId(user.getId()));
+//    }
 
     @PostMapping()
     public ResponseEntity<?> addEvent(@RequestBody CreateEventRequest event) {
@@ -62,7 +92,7 @@ public class EventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest event) {
-        Event updatedEvent= eventService.updateEvent(event,id);
+        Event updatedEvent = eventService.updateEvent(event, id);
         return ApiResponse.successfulResponse("Event updated successfully", updatedEvent);
     }
 
