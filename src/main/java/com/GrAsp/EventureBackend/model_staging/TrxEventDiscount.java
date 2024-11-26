@@ -1,5 +1,6 @@
 package com.GrAsp.EventureBackend.model_staging;
 
+import com.GrAsp.EventureBackend.model.EventDiscount;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
