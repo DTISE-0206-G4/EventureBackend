@@ -27,25 +27,30 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public Page<Event> getEvents(Pageable pageable, String search) {
-        if (search != null && !search.isEmpty()) {
-            return eventRepository.findEventsWithSearch(search, pageable);
+    public Page<Event> getEvents(Pageable pageable, String search, Integer userId) {
+        if (userId != null) {
+            if (search != null && !search.isEmpty()) {
+                return eventRepository.findEventsWithSearchAndUserId(search, userId, pageable);
+            } else {
+                return eventRepository.findAllEventsWithUserId(userId, pageable);
+            }
         } else {
-            return eventRepository.findAllEvents(pageable);
+            if (search != null && !search.isEmpty()) {
+                return eventRepository.findEventsWithSearch(search, pageable);
+            } else {
+                return eventRepository.findAllEvents(pageable);
+            }
         }
     }
 
-    public long count() {
-        return eventRepository.count();
-    }
-
-    public long countFiltered(String search) {
-        if (search != null && !search.isEmpty()) {
-            return eventRepository.countEventsWithSearch(search);
+    public long count(Integer userId) {
+        if (userId != null) { // Count events by user ID
+            return eventRepository.countEventsWithUserId(userId);
         } else {
-            return eventRepository.count();
+            return eventRepository.count(); // Count all events
         }
     }
+
 
     public List<Event> getEventsByUserId(int id) {
         return eventRepository.findByUserId(id);

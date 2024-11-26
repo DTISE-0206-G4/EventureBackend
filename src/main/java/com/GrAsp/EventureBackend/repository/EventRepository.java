@@ -14,7 +14,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     Optional<Event> findById(int id);
 
     List<Event> findByUserId(int id);
-//    Optional<Event> findByTitle(String title);
 
     @Query(value = "SELECT u FROM Event u WHERE u.title LIKE %:search%")
     Page<Event> findEventsWithSearch(@Param("search") String search, Pageable pageable);
@@ -22,6 +21,14 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query(value = "SELECT u FROM Event u")
     Page<Event> findAllEvents(Pageable pageable);
 
-    @Query(value = "SELECT COUNT(u) FROM Event u WHERE u.title LIKE %:search%")
-    long countEventsWithSearch(@Param("search") String search);
+
+    @Query(value = "SELECT u FROM Event u WHERE u.title LIKE %:search% AND u.userId = :userId")
+    Page<Event> findEventsWithSearchAndUserId(@Param("search") String search, @Param("userId") int userId, Pageable pageable);
+
+    @Query(value = "SELECT u FROM Event u WHERE u.userId = :userId")
+    Page<Event> findAllEventsWithUserId(@Param("userId") int userId, Pageable pageable);
+
+    @Query(value = "SELECT COUNT(u) FROM Event u WHERE u.userId = :userId")
+    long countEventsWithUserId(@Param("userId") int userId);
+
 }

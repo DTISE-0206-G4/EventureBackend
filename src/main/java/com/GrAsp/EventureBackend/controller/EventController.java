@@ -40,13 +40,14 @@ public class EventController {
                                                 @RequestParam int length,
                                                 @RequestParam(required = false) String search,
                                                 @RequestParam(required = false) String orderColumn,
-                                                @RequestParam(required = false) String orderDir) {
+                                                @RequestParam(required = false) String orderDir,
+                                                @RequestParam(required = false) Integer userId) {
         int page = start / length;
         Sort.Direction direction = Sort.Direction.fromString(orderDir != null ? orderDir : "asc");
         Sort sort = Sort.by(direction, orderColumn != null ? orderColumn : "id");
         Pageable pageable = PageRequest.of(page, length, sort);
-        Page<Event> eventPage = eventService.getEvents(pageable, search);
-        long totalRecords = eventService.count();
+        Page<Event> eventPage = eventService.getEvents(pageable, search, userId);
+        long totalRecords = eventService.count(userId);
         Map<String, Object> response = new HashMap<>();
         response.put("draw", draw);
         response.put("recordsTotal", totalRecords);
@@ -54,16 +55,6 @@ public class EventController {
         response.put("data", eventPage.getContent());
         return ApiResponse.successfulResponse("Events retrieved successfully", response);
     }
-
-//    @GetMapping("/my_event")
-//    public ResponseEntity<?> getEventsForOrganizer() {
-//        String email = Claims.getEmailFromJwt();
-//        var user = userService.getProfile(email);
-//        if (user == null) {
-//            return ApiResponse.failedResponse("User not found");
-//        }
-//        return ApiResponse.successfulResponse("Events retrieved successfully", eventService.getEventsByUserId(user.getId()));
-//    }
 
     @PostMapping()
     public ResponseEntity<?> addEvent(@RequestBody CreateEventRequest event) {
