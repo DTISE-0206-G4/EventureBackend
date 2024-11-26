@@ -12,10 +12,11 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "ticket")
+@Table(name = "ticket", schema = "public")
 public class Ticket {
     @Id
-    @ColumnDefault("nextval('ticket_id_seq')")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_id_gen")
+    @SequenceGenerator(name = "ticket_id_gen", sequenceName = "ticket_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -50,10 +51,21 @@ public class Ticket {
     @Column(name = "price", nullable = false)
     private Double price;
 
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "is_released", nullable = false)
+    private Boolean isReleased;
+
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "is_closed", nullable = false)
+    private Boolean isClosed;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now();
         updatedAt = OffsetDateTime.now();
+        soldSeat = 0;
     }
 
     @PreUpdate

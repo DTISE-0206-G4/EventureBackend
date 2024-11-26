@@ -29,10 +29,10 @@ public class UserDiscount {
     private String description;
 
     @Column(name = "amount", nullable = false)
-    private double amount;
+    private Double amount;
 
     @Column(name = "is_percentage")
-    private boolean isPercentage;
+    private Boolean isPercentage;
 
     @Column(name = "code", nullable = false, length = 255)
     private String code;

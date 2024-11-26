@@ -69,16 +69,16 @@ public class UserService {
                     userDiscount.setUserId(newUser.getId());
                     userDiscount.setName("Referral Discount");
                     userDiscount.setDescription("10% discount for using a referral code");
-                    userDiscount.setAmount(10);
-                    userDiscount.setPercentage(true);
+                    userDiscount.setAmount(10.0);
+                    userDiscount.setIsPercentage(true);
                     userDiscountRepository.save(userDiscount);
 
                     UserDiscount userDiscountReferrer = new UserDiscount();
                     userDiscountReferrer.setUserId(referrer.get().getId());
                     userDiscountReferrer.setName("Referral Discount");
                     userDiscountReferrer.setDescription("10000 points for referring a user");
-                    userDiscountReferrer.setAmount(10000);
-                    userDiscountReferrer.setPercentage(false);
+                    userDiscountReferrer.setAmount(10000.0);
+                    userDiscountReferrer.setIsPercentage(false);
                     userDiscountRepository.save(userDiscountReferrer);
                 } catch (Exception e) {
                     throw new RuntimeException("Can't save user, " + e.getMessage());
