@@ -29,4 +29,15 @@ public class EventDiscountController {
         return ApiResponse.successfulResponse("Event discount retrieved successfully", eventDiscountService.getEventDiscountById(id));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEventDiscount(@PathVariable Integer id, @RequestBody CreateEventDiscountRequest req) {
+        return ApiResponse.successfulResponse("Event discount updated successfully", eventDiscountService.updateEventDiscount(req, id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEventDiscount(@PathVariable Integer id) {
+        eventDiscountService.deleteEventDiscount(id);
+        return ApiResponse.successfulResponse("Event discount deleted successfully");
+    }
+
 }

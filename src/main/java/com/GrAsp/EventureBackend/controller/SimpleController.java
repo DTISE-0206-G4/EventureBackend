@@ -23,12 +23,13 @@ public class SimpleController {
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("hehe");
     }
-    @PreAuthorize("hasAuthority('SCOPE_Buyer')")
+    @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
     @GetMapping("/buyer")
     public ResponseEntity<String> getBuyer() {
         return ResponseEntity.ok("Buyer only endpoint.");
     }
-    @PreAuthorize("hasAuthority('SCOPE_Seller')")
+
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @GetMapping("/seller")
     public ResponseEntity<String> getSeller() {
         return ResponseEntity.ok("Seller only endpoint.");

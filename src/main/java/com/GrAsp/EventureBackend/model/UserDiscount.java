@@ -4,6 +4,7 @@ package com.GrAsp.EventureBackend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "user_discount", schema = "public")
+@SQLRestriction("deleted_at IS NULL")
 public class UserDiscount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

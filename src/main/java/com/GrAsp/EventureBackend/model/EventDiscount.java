@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
 
@@ -13,6 +14,7 @@ import java.time.OffsetDateTime;
 @Setter
 @Entity
 @Table(name = "event_discount", schema = "public")
+@SQLRestriction("deleted_at IS NULL")
 public class EventDiscount {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_discount_id_gen")
