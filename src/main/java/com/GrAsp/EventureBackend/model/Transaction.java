@@ -1,7 +1,5 @@
-package com.GrAsp.EventureBackend.model_staging;
+package com.GrAsp.EventureBackend.model;
 
-import com.GrAsp.EventureBackend.model.Event;
-import com.GrAsp.EventureBackend.model.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -16,23 +14,18 @@ import java.time.OffsetDateTime;
 @Table(name = "transaction")
 public class Transaction {
     @Id
-    @ColumnDefault("nextval('transaction_id_seq')")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_id_gen")
+    @SequenceGenerator(name = "transaction_id_gen", sequenceName = "transaction_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-
-    @NotNull
-    @Column(name = "ticket_amount", nullable = false)
-    private Integer ticketAmount;
+    @Column(name = "ticket_id", nullable = false)
+    private Integer ticketId;
 
     @NotNull
     @Column(name = "ticket_price", nullable = false)
@@ -43,17 +36,32 @@ public class Transaction {
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
-    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
+
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
+
+    @PreRemove
+    protected void onRemove() {
+        deletedAt = OffsetDateTime.now();
+    }
 
 }

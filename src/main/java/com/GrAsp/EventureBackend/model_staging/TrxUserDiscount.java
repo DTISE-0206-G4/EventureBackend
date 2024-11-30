@@ -1,5 +1,6 @@
 package com.GrAsp.EventureBackend.model_staging;
 
+import com.GrAsp.EventureBackend.model.Transaction;
 import com.GrAsp.EventureBackend.model.UserDiscount;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
