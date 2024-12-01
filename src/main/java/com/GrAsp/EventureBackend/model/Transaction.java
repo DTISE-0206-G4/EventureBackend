@@ -39,11 +39,11 @@ public class Transaction {
     private Double totalPrice;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "event_discount", joinColumns = @JoinColumn(name = "transaction_id"), inverseJoinColumns = @JoinColumn(name = "event_discount_id"))
+    @JoinTable(name = "trx_event_discounts", joinColumns = @JoinColumn(name = "transaction_id"), inverseJoinColumns = @JoinColumn(name = "event_discount_id"))
     private Set<EventDiscount> eventDiscounts = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "user_discount", joinColumns = @JoinColumn(name = "transaction_id"), inverseJoinColumns = @JoinColumn(name = "user_discount_id"))
+    @JoinTable(name = "trx_user_discounts", joinColumns = @JoinColumn(name = "transaction_id"), inverseJoinColumns = @JoinColumn(name = "user_discount_id"))
     private Set<UserDiscount> userDiscounts = new HashSet<>();
 
     @ColumnDefault("CURRENT_TIMESTAMP")
