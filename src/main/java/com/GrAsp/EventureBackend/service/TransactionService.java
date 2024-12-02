@@ -4,21 +4,27 @@ import com.GrAsp.EventureBackend.dto.TransactionRequest;
 import com.GrAsp.EventureBackend.model.EventDiscount;
 import com.GrAsp.EventureBackend.model.Ticket;
 import com.GrAsp.EventureBackend.model.Transaction;
+import com.GrAsp.EventureBackend.model.UserDiscount;
 import com.GrAsp.EventureBackend.repository.EventDiscountRepository;
 import com.GrAsp.EventureBackend.repository.TicketRepository;
 import com.GrAsp.EventureBackend.repository.TransactionRepository;
+import com.GrAsp.EventureBackend.repository.UserDiscountRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Log
 public class TransactionService {
     private TransactionRepository transactionRepository;
     private TicketRepository ticketRepository;
     private EventDiscountRepository eventDiscountRepository;
+    private UserDiscountRepository userDiscountRepository;
 
     public Optional<Transaction> getTransactionById(int id) {
         return transactionRepository.findById(id);
@@ -81,7 +87,7 @@ public class TransactionService {
             eventDiscountRepository.save(updatedEventDiscount);
             //todo apply discount
             if (eventDiscount.get().getIsPercentage()) {
-                totalPrice = totalPrice * (1 - (eventDiscount.get().getAmount() / 100));
+                totalPrice = totalPrice - (ticket.get().getPrice() * (eventDiscount.get().getAmount() / 100));
             } else {
                 totalPrice = totalPrice - eventDiscount.get().getAmount();
             }
@@ -89,6 +95,35 @@ public class TransactionService {
                 totalPrice = 0.0;
             }
             transaction.getEventDiscounts().add(updatedEventDiscount);
+        }
+
+        //user discount
+        for (Integer userDiscountId : req.getUserDiscounts()) {
+            Optional<UserDiscount> userDiscount = userDiscountRepository.findById(userDiscountId);
+            if (userDiscount.isEmpty()) {
+                throw new RuntimeException("User discount not found");
+            }
+            if (userDiscount.get().getIsUsed()) {
+                throw new RuntimeException("User discount is used");
+            }
+            if (userDiscount.get().getExpiredAt().isBefore(OffsetDateTime.now())) {
+                log.info("expired: " + userDiscount.get().getExpiredAt());
+                log.info("now: " + OffsetDateTime.now().toString());
+                throw new RuntimeException("User discount expired");
+            }
+
+            //todo is_used=true userDiscount
+            UserDiscount updatedUserDiscount = userDiscount.get();
+            updatedUserDiscount.setIsUsed(true);
+            userDiscountRepository.save(updatedUserDiscount);
+
+            //todo apply discount
+            if (userDiscount.get().getIsPercentage()) {
+                totalPrice = totalPrice - (ticket.get().getPrice() * (userDiscount.get().getAmount() / 100));
+            } else {
+                totalPrice = totalPrice - userDiscount.get().getAmount();
+            }
+
         }
 
         //todo ticket sold++

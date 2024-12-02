@@ -71,6 +71,7 @@ public class UserService {
                     userDiscount.setDescription("10% discount for using a referral code");
                     userDiscount.setAmount(10.0);
                     userDiscount.setIsPercentage(true);
+                    userDiscount.setIsUsed(false);
                     userDiscountRepository.save(userDiscount);
 
                     UserDiscount userDiscountReferrer = new UserDiscount();
