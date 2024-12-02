@@ -8,6 +8,7 @@ import com.GrAsp.EventureBackend.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class TransactionController {
         return ApiResponse.successfulResponse("Transactions retrieved successfully", transactionService.getTransactionsByTicketId(ticketId)); // Add this line
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
     @PostMapping()
     public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest transactionRequest) {
         String email = Claims.getEmailFromJwt();

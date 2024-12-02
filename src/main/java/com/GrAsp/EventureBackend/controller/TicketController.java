@@ -7,6 +7,7 @@ import com.GrAsp.EventureBackend.service.TicketService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class TicketController {
         return ApiResponse.successfulResponse("Tickets retrieved successfully", ticketService.getTicketsByEventId(eventId)); // Add this line
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PostMapping()
     public ResponseEntity<?> addTicket(@RequestBody CreateTicketRequest req) {
         return ApiResponse.successfulResponse("Ticket added successfully", ticketService.addTicket(req)); // Add this line
@@ -37,6 +39,7 @@ public class TicketController {
         return ApiResponse.failedResponse("Ticket not found");
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTicket(@RequestBody CreateTicketRequest req, @PathVariable int id) {
         log.info("Updating ticket name: " + req.getName());
@@ -44,16 +47,19 @@ public class TicketController {
         return ApiResponse.successfulResponse("Ticket updated successfully", ticketService.updateTicket(req, id));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PostMapping("/{id}/release")
     public ResponseEntity<?> releaseTicket(@PathVariable int id) {
         return ApiResponse.successfulResponse("Ticket released successfully", ticketService.releaseTicket(id));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PostMapping("/{id}/close")
     public ResponseEntity<?> closeTicket(@PathVariable int id) {
         return ApiResponse.successfulResponse("Ticket closed successfully", ticketService.closeTicket(id));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTicket(@PathVariable int id) {
         ticketService.deleteTicket(id);

@@ -6,6 +6,7 @@ import com.GrAsp.EventureBackend.model.EventDiscount;
 import com.GrAsp.EventureBackend.service.EventDiscountService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class EventDiscountController {
         return ApiResponse.successfulResponse("Event discounts retrieved successfully", eventDiscountService.getAllEventDiscounts(eventId));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PostMapping()
     public ResponseEntity<?> addEventDiscount(@RequestBody CreateEventDiscountRequest req) {
         return ApiResponse.successfulResponse("Event discount added successfully", eventDiscountService.addEventDiscount(req));
@@ -29,11 +31,13 @@ public class EventDiscountController {
         return ApiResponse.successfulResponse("Event discount retrieved successfully", eventDiscountService.getEventDiscountById(id));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEventDiscount(@PathVariable Integer id, @RequestBody CreateEventDiscountRequest req) {
         return ApiResponse.successfulResponse("Event discount updated successfully", eventDiscountService.updateEventDiscount(req, id));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEventDiscount(@PathVariable Integer id) {
         eventDiscountService.deleteEventDiscount(id);

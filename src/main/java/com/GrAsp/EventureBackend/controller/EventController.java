@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class EventController {
         return ApiResponse.successfulResponse("Events retrieved successfully", response);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PostMapping()
     public ResponseEntity<?> addEvent(@RequestBody CreateEventRequest event) {
         String email = Claims.getEmailFromJwt();
@@ -79,12 +81,14 @@ public class EventController {
         return ApiResponse.failedResponse("Event not found");
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest event) {
         Event updatedEvent = eventService.updateEvent(event, id);
         return ApiResponse.successfulResponse("Event updated successfully", updatedEvent);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable int id) {
         eventService.deleteEvent(id);
