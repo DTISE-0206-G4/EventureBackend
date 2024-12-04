@@ -7,6 +7,7 @@ import com.GrAsp.EventureBackend.dto.LogoutRequest;
 import com.GrAsp.EventureBackend.dto.RegisterRequest;
 import com.GrAsp.EventureBackend.security.config.Claims;
 import com.GrAsp.EventureBackend.security.service.AuthService;
+import com.GrAsp.EventureBackend.security.service.TokenService;
 import com.GrAsp.EventureBackend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
+    private final TokenService tokenService;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, TokenService tokenService) {
         this.authService = authService;
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/login")
@@ -53,6 +56,18 @@ public class AuthController {
         var accessToken = Claims.getJwtTokenString();
         req.setAccessToken(accessToken);
         return ApiResponse.successfulResponse("Logout successful", authService.logoutUser(req));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh() {
+        String tokenType = Claims.getTokenTypeFromJwt();
+        if (!"REFRESH".equals(tokenType)) {
+            return ApiResponse.failedResponse("Invalid refresh token");
+//            return Response.failedResponse(HttpStatus.UNAUTHORIZED.value(), "Invalid token type for refresh");
+        }
+        String token = Claims.getJwtTokenString();
+        return ApiResponse.successfulResponse("Refresh successful", tokenService.refreshAccessToken(token));
+//        return Response.successfulResponse("Refresh successful", tokenRefreshUsecase.refreshAccessToken(token));
     }
 
 }
