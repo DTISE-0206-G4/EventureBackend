@@ -19,6 +19,8 @@ public class AuthService {
     private final TokenService tokenService;
     private final JwtDecoder jwtDecoder;
     private final BlacklistService blacklistService;
+    private final long ACCESS_TOKEN_EXPIRY = 900L;
+    private final long REFRESH_TOKEN_EXPIRY = 86400L;
 
     public AuthService(AuthenticationManager authenticationManager, TokenService tokenService, JwtDecoder jwtDecoder, BlacklistService blacklistService) {
         this.authenticationManager = authenticationManager;
@@ -35,8 +37,9 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
             );
-            String token = tokenService.generateToken(authentication);
-            return new LoginResponse(token);
+            String accessToken = tokenService.generateToken(authentication, TokenService.TokenType.ACCESS);
+            String refreshToken = tokenService.generateToken(authentication, TokenService.TokenType.REFRESH);
+            return new LoginResponse(accessToken, refreshToken, "Bearer");
         } catch (AuthenticationException e) {
 //            log.info(e.getMessage());
             throw new RuntimeException("Wrong credentials");
@@ -56,10 +59,10 @@ public class AuthService {
 
     public Boolean logoutUser(LogoutRequest req) {
         Jwt accessToken = jwtDecoder.decode(req.getAccessToken());
-//        Jwt refreshToken = jwtDecoder.decode(req.getRefreshToken());
+        Jwt refreshToken = jwtDecoder.decode(req.getRefreshToken());
 
         blacklistService.blacklistToken(accessToken.getTokenValue(), Objects.requireNonNull(accessToken.getExpiresAt()).toString());
-//        TokenBlacklistUsecase.blacklistToken(refreshToken.getTokenValue(), Objects.requireNonNull(refreshToken.getExpiresAt()).toString());
+        blacklistService.blacklistToken(refreshToken.getTokenValue(), Objects.requireNonNull(refreshToken.getExpiresAt()).toString());
         return Boolean.TRUE;
     }
 

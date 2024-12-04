@@ -61,4 +61,7 @@ public class Claims {
 
         return jwt.getTokenValue();
     }
+    public static String getTokenTypeFromJwt() {
+        return (String) getClaimsFromJwt().get("type");
+    }
 }

@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class LogoutRequest {
-//    @NotNull
-//    private String refreshToken;
+    @NotNull
+    private String refreshToken;
     @NotNull
     private String accessToken;
 }
