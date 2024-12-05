@@ -9,12 +9,14 @@ import com.GrAsp.EventureBackend.security.config.Claims;
 import com.GrAsp.EventureBackend.security.service.AuthService;
 import com.GrAsp.EventureBackend.security.service.TokenService;
 import com.GrAsp.EventureBackend.service.UserService;
+import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Log
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
@@ -55,6 +57,8 @@ public class AuthController {
     public ResponseEntity<?> logout(@Validated @RequestBody LogoutRequest req) {
         var accessToken = Claims.getJwtTokenString();
         req.setAccessToken(accessToken);
+        log.info("access token: "+req.getAccessToken());
+        log.info("refresh token: "+req.getRefreshToken());
         return ApiResponse.successfulResponse("Logout successful", authService.logoutUser(req));
     }
 
