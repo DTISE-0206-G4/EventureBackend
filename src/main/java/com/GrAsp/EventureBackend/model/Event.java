@@ -1,5 +1,6 @@
 package com.GrAsp.EventureBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -68,6 +69,12 @@ public class Event {
     @JoinTable(name = "event_categories", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+//    @JsonIgnoreProperties("event")
+//    private Set<Ticket> tickets;
+    @OneToMany(mappedBy = "event")
+    @JsonIgnoreProperties("event")
+    private Set<Ticket> tickets;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false, updatable = false)

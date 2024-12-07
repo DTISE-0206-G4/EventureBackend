@@ -9,6 +9,7 @@ import com.GrAsp.EventureBackend.repository.EventDiscountRepository;
 import com.GrAsp.EventureBackend.repository.TicketRepository;
 import com.GrAsp.EventureBackend.repository.TransactionRepository;
 import com.GrAsp.EventureBackend.repository.UserDiscountRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class TransactionService {
         return transactionRepository.findTransactionsByUserId(userId);
     }
 
+    @Transactional
     public Transaction saveTransaction(TransactionRequest req, Integer userId) {
         Transaction transaction = new Transaction();
         //todo get ticket price
@@ -133,7 +135,8 @@ public class TransactionService {
 
         //todo save transaction
 
-        transaction.setTicketId(req.getTicketId());
+        transaction.setTicket(updatedTicket);
+//        transaction.setTicketId(req.getTicketId());
         transaction.setUserId(userId);
         transaction.setTicketPrice(ticket.get().getPrice());
         transaction.setTotalPrice(totalPrice);
