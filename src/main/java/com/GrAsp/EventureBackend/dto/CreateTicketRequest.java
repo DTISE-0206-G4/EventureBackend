@@ -18,7 +18,7 @@ public class CreateTicketRequest {
 
     public Ticket toEntity() {
         Ticket ticket = new Ticket();
-        ticket.setEventId(eventId);
+//        ticket.setEventId(eventId);
         ticket.setName(name);
         ticket.setPrice(price);
         ticket.setAvailableSeat(availableSeat);

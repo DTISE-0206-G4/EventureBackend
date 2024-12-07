@@ -1,5 +1,6 @@
 package com.GrAsp.EventureBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -25,9 +26,19 @@ public class Transaction {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @NotNull
-    @Column(name = "ticket_id", nullable = false)
-    private Integer ticketId;
+//    @NotNull
+//    @Column(name = "ticket_id", nullable = false)
+//    private Integer ticketId;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "ticket_id", nullable = false)  // Foreign key reference to Event
+//    @JsonIgnore
+//    private Ticket ticket;
+
+    @ManyToOne
+    @JoinColumn(name = "ticket_id")
+    @JsonIgnore
+    private Ticket ticket;
 
     @NotNull
     @Column(name = "ticket_price", nullable = false)

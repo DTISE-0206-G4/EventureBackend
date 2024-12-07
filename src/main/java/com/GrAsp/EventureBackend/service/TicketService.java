@@ -2,6 +2,7 @@ package com.GrAsp.EventureBackend.service;
 
 import com.GrAsp.EventureBackend.dto.CreateTicketRequest;
 import com.GrAsp.EventureBackend.model.Ticket;
+import com.GrAsp.EventureBackend.repository.EventRepository;
 import com.GrAsp.EventureBackend.repository.TicketRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TicketService {
     private final TicketRepository ticketRepository;
+    private final EventRepository eventRepository;
 
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
@@ -31,6 +33,7 @@ public class TicketService {
     public Ticket addTicket(CreateTicketRequest req) {
         try {
             Ticket newTicket = req.toEntity();
+            newTicket.setEvent(eventRepository.findById(req.getEventId()).orElse(null));
             return ticketRepository.save(newTicket);
         } catch (Exception e) {
             throw new RuntimeException("Can't save event, " + e.getMessage());

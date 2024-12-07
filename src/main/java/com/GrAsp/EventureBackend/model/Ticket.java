@@ -1,5 +1,7 @@
 package com.GrAsp.EventureBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,6 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,8 +25,22 @@ public class Ticket {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "event_id")
-    private Integer eventId;
+//    @Column(name = "event_id")
+//    private Integer eventId;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "event_id", nullable = false)  // Foreign key reference to Event
+//    @JsonIgnore
+//    private Event event;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    @JsonIgnore
+    private Event event;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("ticket")
+    private Set<Transaction> transactions;
 
     @NotNull
     @Column(name = "available_seat", nullable = false)

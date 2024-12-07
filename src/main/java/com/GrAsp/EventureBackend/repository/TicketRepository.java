@@ -10,4 +10,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     Optional<Ticket> findById(int id);
 
     List<Ticket> findTicketByEventId(int id);
+
 }
