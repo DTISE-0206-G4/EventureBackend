@@ -125,7 +125,7 @@ public class TransactionService {
             } else {
                 totalPrice = totalPrice - userDiscount.get().getAmount();
             }
-
+            transaction.getUserDiscounts().add(updatedUserDiscount);
         }
 
         //todo ticket sold++

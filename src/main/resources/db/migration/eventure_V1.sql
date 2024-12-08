@@ -113,7 +113,7 @@ CREATE TABLE "public"."user_discount" (
                                           "amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
                                           "is_percentage" BOOLEAN NOT NULL,
                                           "code" CHARACTER VARYING(255) NOT NULL,
-                                          "is_used" BOOLEAN,
+                                          "is_used" BOOLEAN NOT NULL DEFAULT false,
                                           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                           "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                           "deleted_at" TIMESTAMP WITH TIME ZONE,
@@ -195,7 +195,7 @@ CREATE TABLE "public"."trx_user_discounts" (
                                                "transaction_id" INTEGER NOT NULL,
                                                "user_discount_id" INTEGER NOT NULL,
                                                "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                               "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL,
+                                               "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                                "deleted_at" TIMESTAMP WITH TIME ZONE,
                                                PRIMARY KEY ( "id" )
 )
@@ -281,6 +281,10 @@ ALTER TABLE "public"."event"
 
 ALTER TABLE "public"."transaction"
     ADD CONSTRAINT "transaction_ticket_id_fkey" FOREIGN KEY ( "ticket_id" ) REFERENCES "public"."ticket" ( "id" )
+        ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE "public"."transaction"
+    ADD CONSTRAINT "transaction_user_id_fkey" FOREIGN KEY ( "user_id" ) REFERENCES "public"."user" ( "id" )
         ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 ALTER TABLE "public"."event_discount"

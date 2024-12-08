@@ -15,6 +15,7 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "event_discount", schema = "public")
 @SQLRestriction("deleted_at IS NULL")
+//@SQLRestriction("deleted_at IS NULL AND expired_at > CURRENT_TIMESTAMP")
 public class EventDiscount {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_discount_id_gen")

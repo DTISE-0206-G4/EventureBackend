@@ -13,6 +13,6 @@ public class UserDiscountService {
     private final UserDiscountRepository userDiscountRepository;
 
     public List<UserDiscount> getUserDiscounts(Integer userId) {
-        return userDiscountRepository.findUserDiscountsByUserId(userId);
+        return userDiscountRepository.findActiveUserDiscountsByUserId(userId);
     }
 }

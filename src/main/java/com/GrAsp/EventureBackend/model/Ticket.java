@@ -40,6 +40,7 @@ public class Ticket {
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("ticket")
+    @JsonIgnore
     private Set<Transaction> transactions;
 
     @NotNull
