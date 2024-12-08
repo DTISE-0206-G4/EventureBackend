@@ -12,6 +12,8 @@ import com.GrAsp.EventureBackend.repository.UserDiscountRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -37,6 +39,10 @@ public class TransactionService {
 
     public List<Transaction> getTransactionsByUserId(int userId) {
         return transactionRepository.findTransactionsByUserId(userId);
+    }
+
+    public Page<Transaction> getTransactionsForUser(Pageable pageable, Integer userId) {
+            return transactionRepository.findAllTransactionsWithUserId(userId, pageable);
     }
 
     @Transactional

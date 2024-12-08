@@ -37,7 +37,7 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")
-    @JsonIgnore
+//    @JsonIgnore
     private Ticket ticket;
 
     @NotNull
