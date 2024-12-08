@@ -65,6 +65,7 @@ public class UserDiscount {
         updatedAt = OffsetDateTime.now();
         code = UUID.randomUUID().toString();
         expiredAt = OffsetDateTime.now().plusDays(90);
+        isUsed = false;
     }
 
     @PreUpdate
