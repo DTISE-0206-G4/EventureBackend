@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -33,8 +35,25 @@ public class TransactionController {
         return ApiResponse.successfulResponse("Transactions retrieved successfully", transactionService.getTransactionsByTicketId(ticketId)); // Add this line
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getTransaction(@PathVariable Integer id) {
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        Optional<Transaction> transaction = transactionService.getTransactionById(id);
+        if (transaction.isEmpty()) {
+            return ApiResponse.failedResponse("Transaction not found");
+        }
+        if(!Objects.equals(transaction.get().getUser().getId(), user.getId())){
+            return ApiResponse.failedResponse("Transaction not found");
+        }
+        return ApiResponse.successfulResponse("Transaction retrieved successfully", transaction.get()); // Add this line
+    }
+
     @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
-    @GetMapping("/user")
+    @GetMapping("/datatable")
     public ResponseEntity<?> getTransactionsForUser(@RequestParam int start,
                                                     @RequestParam int length) {
         String email = Claims.getEmailFromJwt();

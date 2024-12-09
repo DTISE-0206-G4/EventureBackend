@@ -30,7 +30,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     FROM Transaction t
     JOIN t.ticket tk
     JOIN tk.event e
-    WHERE t.userId = :userId
+    WHERE t.user.id = :userId
 """)
     Page<Transaction> findAllTransactionsWithUserId(@Param("userId") int userId, Pageable pageable);
 

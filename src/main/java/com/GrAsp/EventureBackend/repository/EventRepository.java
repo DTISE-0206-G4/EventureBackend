@@ -23,13 +23,13 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     Page<Event> findAllEvents(Pageable pageable);
 
 
-    @Query(value = "SELECT u FROM Event u WHERE u.title LIKE %:search% AND u.userId = :userId")
+    @Query(value = "SELECT u FROM Event u WHERE u.title LIKE %:search% AND u.user.id = :userId")
     Page<Event> findEventsWithSearchAndUserId(@Param("search") String search, @Param("userId") int userId, Pageable pageable);
 
-    @Query(value = "SELECT u FROM Event u WHERE u.userId = :userId")
+    @Query(value = "SELECT u FROM Event u WHERE u.user.id = :userId")
     Page<Event> findAllEventsWithUserId(@Param("userId") int userId, Pageable pageable);
 
-    @Query(value = "SELECT COUNT(u) FROM Event u WHERE u.userId = :userId")
+    @Query(value = "SELECT COUNT(u) FROM Event u WHERE u.user.id = :userId")
     long countEventsWithUserId(@Param("userId") int userId);
 
 

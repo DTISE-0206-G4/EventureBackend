@@ -1,6 +1,8 @@
 package com.GrAsp.EventureBackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -22,9 +24,14 @@ public class Transaction {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @NotNull
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+//    @NotNull
+//    @Column(name = "user_id", nullable = false)
+//    private Integer userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIncludeProperties({"id","name","email"})
+    private User user;
 
 //    @NotNull
 //    @Column(name = "ticket_id", nullable = false)

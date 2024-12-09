@@ -22,7 +22,7 @@ public class TransactionDTO {
 
     public TransactionDTO(Transaction transaction) {
         this.id = transaction.getId();
-        this.userId = transaction.getUserId();
+        this.userId = transaction.getUser().getId();
         this.ticketId = transaction.getTicket().getId();  // Foreign key reference to Event
         this.ticketPrice = transaction.getTicketPrice();
         this.totalPrice = transaction.getTotalPrice();

@@ -1,6 +1,7 @@
 package com.GrAsp.EventureBackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,9 +42,14 @@ public class Event {
 //    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 //    private Set<Role> roles = new HashSet<>();
 
-    @NotNull
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+//    @NotNull
+//    @Column(name = "user_id", nullable = false)
+//    private Integer userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIncludeProperties({"id","name","email"})
+    private User user;
 
     @Size(max = 255)
     @NotNull
