@@ -143,4 +143,39 @@ public class UserService {
         }).orElse(false);
 
     }
+
+    public UserProfileResponse changeReferralCode(String referralCode, Integer userId) { // Assuming ChangeReferralCodeRequest is a custom request class
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        Optional<User> checkUser = userRepository.findByReferralCode(referralCode);
+        if (checkUser.isPresent()) {
+            throw new RuntimeException("Referral code already exists");
+        }
+        user.get().setReferralCode(referralCode);
+        try {
+            User updatedUser= userRepository.save(user.get());
+            UserProfileResponse userProfileResponse = new UserProfileResponse();
+            userProfileResponse.setId(updatedUser.getId());
+            userProfileResponse.setName(updatedUser.getName());
+            userProfileResponse.setEmail(updatedUser.getEmail());
+            userProfileResponse.setDescription(updatedUser.getDescription());
+            userProfileResponse.setProfileImage(updatedUser.getProfileImage());
+            userProfileResponse.setReferralCode(updatedUser.getReferralCode());
+            userProfileResponse.setRoles(updatedUser.getRoles());
+            userProfileResponse.setCreatedAt(updatedUser.getCreatedAt());
+            userProfileResponse.setUpdatedAt(updatedUser.getUpdatedAt());
+            userProfileResponse.setDeletedAt(updatedUser.getDeletedAt());
+            return userProfileResponse;
+        } catch (Exception e) {
+            throw new RuntimeException("Can't save user, " + e.getMessage());
+        }
+    }
+
+    public Boolean checkAvailabilityReferralCode(String referralCode) {
+        Optional<User> user = userRepository.findByReferralCode(referralCode);
+        // Check if the referral code exists
+        return user.isEmpty();
+    }
 }
