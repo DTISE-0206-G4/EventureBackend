@@ -69,6 +69,11 @@ public class User {
     @JsonIgnore
     private Set<Event> events;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    @JsonIgnoreProperties("user")
+    @JsonIgnore
+    private Set<Review> Reviews;
+
     @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false)

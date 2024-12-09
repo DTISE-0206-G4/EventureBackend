@@ -1,5 +1,6 @@
 package com.GrAsp.EventureBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
@@ -81,6 +82,11 @@ public class Event {
     @OneToMany(mappedBy = "event")
     @JsonIgnoreProperties("event")
     private Set<Ticket> tickets;
+
+    @OneToMany(mappedBy = "event")
+    @JsonIgnoreProperties("event")
+    @JsonIgnore
+    private Set<Review> reviews;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false, updatable = false)

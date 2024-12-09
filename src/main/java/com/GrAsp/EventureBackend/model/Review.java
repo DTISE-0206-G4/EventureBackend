@@ -1,7 +1,6 @@
-package com.GrAsp.EventureBackend.model_staging;
+package com.GrAsp.EventureBackend.model;
 
-import com.GrAsp.EventureBackend.model.Event;
-import com.GrAsp.EventureBackend.model.User;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -16,18 +15,21 @@ import java.time.OffsetDateTime;
 @Table(name = "review")
 public class Review {
     @Id
-    @ColumnDefault("nextval('review_id_seq')")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "review_id_gen")
+    @SequenceGenerator(name = "review_id_gen", sequenceName = "review_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonIncludeProperties({"id","title","startTime","endTime"})
     private Event event;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIncludeProperties({"id","name","email"})
     private User user;
 
     @NotNull
@@ -50,5 +52,21 @@ public class Review {
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = OffsetDateTime.now();
+        updatedAt = OffsetDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
+
+    @PreRemove
+    protected void onRemove() {
+        deletedAt = OffsetDateTime.now();
+    }
 
 }
