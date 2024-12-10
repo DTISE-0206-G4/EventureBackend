@@ -31,15 +31,26 @@ public class ReviewService {
         return reviewRepository.findAverageStarsByUserId(userId);
     }
 
+    public Review getReviewByUserIdAndEventId(Integer userId, Integer eventId) {
+        Optional<Review> existingReview = reviewRepository.findReviewByUserIdAndEventId(userId, eventId);
+        if (existingReview.isEmpty()) {
+            throw new RuntimeException("Review not found");
+        }
+        return existingReview.get();
+    }
+
     public Review addReview(ReviewRequest req, Integer userId) {
         Review newReview = req.toEntity();
         Optional<Event> event = eventRepository.findById(req.getEventId());
         if (event.isEmpty()) {
             throw new RuntimeException("Event not found");
         }
-        log.info("endtime: "+ event.get().getEndTime());
         if (event.get().getEndTime() != null && event.get().getEndTime().isAfter(OffsetDateTime.now())) {
             throw new RuntimeException("Event hasn't ended yet");
+        }
+        Optional<Review> existingReview = reviewRepository.findReviewByUserIdAndEventId(userId, req.getEventId());
+        if (existingReview.isPresent()) {
+            throw new RuntimeException("Review already exists for this event");
         }
         newReview.setEvent(event.get());
         Optional<User> user = userRepository.findById(userId);

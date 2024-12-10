@@ -7,6 +7,7 @@ import com.GrAsp.EventureBackend.service.ReviewService;
 import com.GrAsp.EventureBackend.service.UserService;
 import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,17 @@ public class ReviewController {
         return ApiResponse.successfulResponse("Reviews retrieved successfully", reviewService.getAllReviewsByEventId(eventId));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
+    @GetMapping("/user")
+    public ResponseEntity<?> getReviewForUser(@RequestParam Integer eventId) {
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        return ApiResponse.successfulResponse("Reviews retrieved successfully", reviewService.getReviewByUserIdAndEventId(user.getId(), eventId));
+    }
+
     @GetMapping("/average_stars")
     public ResponseEntity<?> getAverageStars() {
         String email = Claims.getEmailFromJwt();
@@ -35,6 +47,7 @@ public class ReviewController {
         return ApiResponse.successfulResponse("Average stars retrieved successfully", reviewService.getAverageStartByOrganizer(user.getId()));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
     @PostMapping()
     public ResponseEntity<?> addReview(@RequestBody ReviewRequest req) {
         String email = Claims.getEmailFromJwt();

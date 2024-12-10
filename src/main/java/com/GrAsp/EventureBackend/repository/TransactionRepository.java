@@ -21,9 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     Optional<Transaction> findTransactionByTicketIdAndUserId(int ticketId, int userId);
 
-
-//    @Query(value = "SELECT u FROM Event u WHERE u.userId = :userId")
-//    Page<Event> findAllEventsWithUserId(@Param("userId") int userId, Pageable pageable);
+    Optional<Transaction> findTransactionByUserIdAndTicketEvent_Id(int userId, Integer eventId);
 
     @Query("""
     SELECT t 
