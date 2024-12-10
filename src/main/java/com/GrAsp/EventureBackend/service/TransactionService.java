@@ -1,17 +1,13 @@
 package com.GrAsp.EventureBackend.service;
 
 import com.GrAsp.EventureBackend.dto.TransactionRequest;
-import com.GrAsp.EventureBackend.model.EventDiscount;
-import com.GrAsp.EventureBackend.model.Ticket;
-import com.GrAsp.EventureBackend.model.Transaction;
-import com.GrAsp.EventureBackend.model.UserDiscount;
-import com.GrAsp.EventureBackend.repository.EventDiscountRepository;
-import com.GrAsp.EventureBackend.repository.TicketRepository;
-import com.GrAsp.EventureBackend.repository.TransactionRepository;
-import com.GrAsp.EventureBackend.repository.UserDiscountRepository;
+import com.GrAsp.EventureBackend.model.*;
+import com.GrAsp.EventureBackend.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -22,6 +18,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Log
 public class TransactionService {
+    private final UserRepository userRepository;
     private TransactionRepository transactionRepository;
     private TicketRepository ticketRepository;
     private EventDiscountRepository eventDiscountRepository;
@@ -37,6 +34,10 @@ public class TransactionService {
 
     public List<Transaction> getTransactionsByUserId(int userId) {
         return transactionRepository.findTransactionsByUserId(userId);
+    }
+
+    public Page<Transaction> getTransactionsForUser(Pageable pageable, Integer userId) {
+            return transactionRepository.findAllTransactionsWithUserId(userId, pageable);
     }
 
     @Transactional
@@ -137,7 +138,11 @@ public class TransactionService {
 
         transaction.setTicket(updatedTicket);
 //        transaction.setTicketId(req.getTicketId());
-        transaction.setUserId(userId);
+        Optional<User> currentUser=userRepository.findById(userId);
+        if (currentUser.isEmpty()){
+            throw new RuntimeException("User not found");
+        }
+        transaction.setUser(currentUser.get());
         transaction.setTicketPrice(ticket.get().getPrice());
         transaction.setTotalPrice(totalPrice);
         return transactionRepository.save(transaction);

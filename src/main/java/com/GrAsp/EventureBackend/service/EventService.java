@@ -3,8 +3,10 @@ package com.GrAsp.EventureBackend.service;
 import com.GrAsp.EventureBackend.dto.CreateEventRequest;
 import com.GrAsp.EventureBackend.model.Category;
 import com.GrAsp.EventureBackend.model.Event;
+import com.GrAsp.EventureBackend.model.User;
 import com.GrAsp.EventureBackend.repository.CategoryRepository;
 import com.GrAsp.EventureBackend.repository.EventRepository;
+import com.GrAsp.EventureBackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class EventService {
     public final EventRepository eventRepository;
     public final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
@@ -63,7 +66,11 @@ public class EventService {
     public Event addEvent(CreateEventRequest event, Integer userId) {
         try {
             Event newEvent = event.toEntity();
-            newEvent.setUserId(userId);
+            Optional<User> user = userRepository.findById(userId);
+            if (user.isEmpty()) {
+                throw new RuntimeException("User not found");
+            }
+            newEvent.setUser(user.get());
             if (!event.getCategories().isEmpty()) {
                 for (Integer c : event.getCategories()) {
                     Optional<Category> category = categoryRepository.findById(c);

@@ -1,7 +1,10 @@
 package com.GrAsp.EventureBackend.repository;
 
+import com.GrAsp.EventureBackend.model.Event;
 import com.GrAsp.EventureBackend.model.Transaction;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,6 +21,18 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     Optional<Transaction> findTransactionByTicketIdAndUserId(int ticketId, int userId);
 
+
+//    @Query(value = "SELECT u FROM Event u WHERE u.userId = :userId")
+//    Page<Event> findAllEventsWithUserId(@Param("userId") int userId, Pageable pageable);
+
+    @Query("""
+    SELECT t 
+    FROM Transaction t
+    JOIN t.ticket tk
+    JOIN tk.event e
+    WHERE t.user.id = :userId
+""")
+    Page<Transaction> findAllTransactionsWithUserId(@Param("userId") int userId, Pageable pageable);
 
     @Query(value = "SELECT " +
             "SUM(t.total_price) AS dailyRevenue, " +

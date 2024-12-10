@@ -4,6 +4,7 @@ import com.GrAsp.EventureBackend.common.response.ApiResponse;
 import com.GrAsp.EventureBackend.dto.CreateEventRequest;
 import com.GrAsp.EventureBackend.model.Event;
 import com.GrAsp.EventureBackend.security.config.Claims;
+import com.GrAsp.EventureBackend.service.CategoryService;
 import com.GrAsp.EventureBackend.service.EventService;
 import com.GrAsp.EventureBackend.service.UserService;
 import org.springframework.data.domain.Page;
@@ -24,10 +25,12 @@ import java.util.Optional;
 public class EventController {
     private final EventService eventService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
-    public EventController(EventService eventService, UserService userService) {
+    public EventController(EventService eventService, UserService userService, CategoryService categoryService) {
         this.eventService = eventService;
         this.userService = userService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping()
@@ -94,4 +97,10 @@ public class EventController {
         eventService.deleteEvent(id);
         return ApiResponse.successfulResponse("Event deleted successfully");
     }
+
+    @GetMapping("/categories")
+    public ResponseEntity<?> getCategories() { // Assuming this method is used to get categories
+        return ApiResponse.successfulResponse("Categories retrieved successfully", categoryService.getAllCategories());
+    }
+
 }

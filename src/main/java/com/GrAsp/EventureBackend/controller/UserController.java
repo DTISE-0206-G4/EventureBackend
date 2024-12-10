@@ -1,7 +1,10 @@
 package com.GrAsp.EventureBackend.controller;
 
 import com.GrAsp.EventureBackend.common.response.ApiResponse;
+import com.GrAsp.EventureBackend.dto.ChangeReferralCodeRequest;
 import com.GrAsp.EventureBackend.dto.EditUserProfileRequest;
+import com.GrAsp.EventureBackend.dto.UserProfileResponse;
+import com.GrAsp.EventureBackend.model.User;
 import com.GrAsp.EventureBackend.model.UserDiscount;
 import com.GrAsp.EventureBackend.repository.UserDiscountRepository;
 import com.GrAsp.EventureBackend.security.config.Claims;
@@ -51,4 +54,21 @@ public class UserController {
         List<UserDiscount> userDiscounts = userDiscountService.getUserDiscounts(user.getId());
         return ApiResponse.successfulResponse("User discounts", userDiscounts);
     }
+
+    @PutMapping("/change_referral_code")
+    public ResponseEntity<?> changeReferralCode(@RequestBody ChangeReferralCodeRequest req) { // Assuming ChangeReferralCodeRequest is a custom request class
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        UserProfileResponse updatedUser = userService.changeReferralCode(req.getReferralCode(), user.getId());
+        return ApiResponse.successfulResponse("Referral code changed",updatedUser);
+    }
+
+    @GetMapping("/check_availability")
+    public ResponseEntity<?> checkAvailabilityReferralCode(@RequestParam String referralCode) {
+        return ApiResponse.successfulResponse("Check availability referral code", userService.checkAvailabilityReferralCode(referralCode));
+    }
+
 }

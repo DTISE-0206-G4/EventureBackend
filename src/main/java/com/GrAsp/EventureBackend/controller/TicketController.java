@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/ticket")
@@ -22,12 +24,14 @@ public class TicketController {
 
     @GetMapping()
     public ResponseEntity<?> getTickets(@RequestParam Integer eventId) {
-        Optional<Ticket> ticket = ticketService.getTicketById(eventId);
+        List<Ticket> ticket = ticketService.getTicketsByEventId(eventId);
         if (ticket.isEmpty()) {
            return ApiResponse.failedResponse("Ticket not found");
         }
-        TicketDTO ticketDTO = new TicketDTO(ticket.get());
-        return ApiResponse.successfulResponse("Tickets retrieved successfully", ticketDTO); // Add this line
+        List<TicketDTO> ticketDTOs = ticket.stream()
+                .map(TicketDTO::new) // Convert each Ticket to TicketDTO
+                .collect(Collectors.toList());
+        return ApiResponse.successfulResponse("Tickets retrieved successfully", ticketDTOs); // Add this line
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")

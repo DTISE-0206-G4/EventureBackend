@@ -35,7 +35,8 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    @JsonIgnore
+    @JsonIgnoreProperties("tickets")
+//    @JsonIgnore
     private Event event;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
