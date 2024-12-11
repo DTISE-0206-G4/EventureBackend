@@ -37,7 +37,7 @@ public class TransactionService {
     }
 
     public Page<Transaction> getTransactionsForUser(Pageable pageable, Integer userId) {
-            return transactionRepository.findAllTransactionsWithUserId(userId, pageable);
+        return transactionRepository.findAllTransactionsWithUserId(userId, pageable);
     }
 
     @Transactional
@@ -67,6 +67,12 @@ public class TransactionService {
         if (existingTransaction.isPresent()) {
             throw new RuntimeException("Ticket already bought by user");
         }
+
+        existingTransaction = transactionRepository.findTransactionByUserIdAndTicketEvent_Id(userId, ticket.get().getEvent().getId());
+        if (existingTransaction.isPresent()) {
+            throw new RuntimeException("Ticket already bought for this event");
+        }
+
         for (Integer eventDiscountId : req.getEventDiscounts()) {
             Optional<EventDiscount> eventDiscount = eventDiscountRepository.findById(eventDiscountId);
             if (eventDiscount.isEmpty()) {
@@ -138,8 +144,8 @@ public class TransactionService {
 
         transaction.setTicket(updatedTicket);
 //        transaction.setTicketId(req.getTicketId());
-        Optional<User> currentUser=userRepository.findById(userId);
-        if (currentUser.isEmpty()){
+        Optional<User> currentUser = userRepository.findById(userId);
+        if (currentUser.isEmpty()) {
             throw new RuntimeException("User not found");
         }
         transaction.setUser(currentUser.get());
