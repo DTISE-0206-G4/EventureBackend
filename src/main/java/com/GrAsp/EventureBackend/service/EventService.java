@@ -31,18 +31,14 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public Page<Event> getEvents(Pageable pageable, String search, Integer userId) {
+    public Page<Event> getEvents(Pageable pageable, String search, Integer userId, String category) {
         if (userId != null) {
-            if (search != null && !search.isEmpty()) {
-                return eventRepository.findEventsWithSearchAndUserId(search, userId, pageable);
-            } else {
-                return eventRepository.findAllEventsWithUserId(userId, pageable);
-            }
+            return eventRepository.findEventsWithSearchAndUserId(search, userId, pageable);
         } else {
-            if (search != null && !search.isEmpty()) {
+            if (category == null || category.isEmpty()) {
                 return eventRepository.findEventsWithSearch(search, pageable);
             } else {
-                return eventRepository.findAllEvents(pageable);
+                return eventRepository.findEventsWithSearchAndCategory(search, category, pageable);
             }
         }
     }
@@ -89,7 +85,7 @@ public class EventService {
         }
     }
 
-    public Event updateEvent(CreateEventRequest event, Integer id,Integer userId) {
+    public Event updateEvent(CreateEventRequest event, Integer id, Integer userId) {
         try {
             Optional<Event> existingEvent = eventRepository.findById(id);
             if (existingEvent.isEmpty()) {

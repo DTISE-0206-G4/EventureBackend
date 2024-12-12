@@ -16,14 +16,21 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     List<Event> findByUserId(int id);
 
-    @Query(value = "SELECT u FROM Event u WHERE LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%'))")
+    @Query("SELECT u FROM Event u WHERE (:search IS NULL OR :search = '' OR LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Event> findEventsWithSearch(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT u FROM Event u " +
+            "JOIN u.categories c " +
+            "WHERE (:search IS NULL OR :search = '' OR LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND (:category IS NULL OR :category = '' OR LOWER(c.name) LIKE LOWER(CONCAT('%', :category, '%')))")
+    Page<Event> findEventsWithSearchAndCategory(@Param("search") String search, @Param("category") String category, Pageable pageable);
+
 
     @Query(value = "SELECT u FROM Event u")
     Page<Event> findAllEvents(Pageable pageable);
 
 
-    @Query(value = "SELECT u FROM Event u WHERE LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%')) AND u.user.id = :userId")
+    @Query(value = "SELECT u FROM Event u WHERE (:search IS NULL OR :search = '' OR LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%'))) AND u.user.id = :userId")
     Page<Event> findEventsWithSearchAndUserId(@Param("search") String search, @Param("userId") int userId, Pageable pageable);
 
 
