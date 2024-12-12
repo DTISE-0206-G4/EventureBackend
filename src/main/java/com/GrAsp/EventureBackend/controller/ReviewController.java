@@ -38,14 +38,10 @@ public class ReviewController {
     }
 
     @GetMapping("/average_stars")
-    public ResponseEntity<?> getAverageStars() {
-        String email = Claims.getEmailFromJwt();
-        var user = userService.getProfile(email);
-        if (user == null) {
-            return ApiResponse.failedResponse("User not found");
-        }
-        return ApiResponse.successfulResponse("Average stars retrieved successfully", reviewService.getAverageStartByOrganizer(user.getId()));
+    public ResponseEntity<?> getAverageStars(@RequestParam Integer userId) {
+        return ApiResponse.successfulResponse("Average stars retrieved successfully", reviewService.getAverageStartByOrganizer(userId));
     }
+
 
     @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
     @PostMapping()

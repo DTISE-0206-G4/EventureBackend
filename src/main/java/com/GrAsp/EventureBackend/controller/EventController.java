@@ -87,7 +87,12 @@ public class EventController {
     @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest event) {
-        Event updatedEvent = eventService.updateEvent(event, id);
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        Event updatedEvent = eventService.updateEvent(event, id, user.getId());
         return ApiResponse.successfulResponse("Event updated successfully", updatedEvent);
     }
 

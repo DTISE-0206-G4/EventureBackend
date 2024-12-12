@@ -16,15 +16,16 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     List<Event> findByUserId(int id);
 
-    @Query(value = "SELECT u FROM Event u WHERE u.title LIKE %:search%")
+    @Query(value = "SELECT u FROM Event u WHERE LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Event> findEventsWithSearch(@Param("search") String search, Pageable pageable);
 
     @Query(value = "SELECT u FROM Event u")
     Page<Event> findAllEvents(Pageable pageable);
 
 
-    @Query(value = "SELECT u FROM Event u WHERE u.title LIKE %:search% AND u.user.id = :userId")
+    @Query(value = "SELECT u FROM Event u WHERE LOWER(u.title) LIKE LOWER(CONCAT('%', :search, '%')) AND u.user.id = :userId")
     Page<Event> findEventsWithSearchAndUserId(@Param("search") String search, @Param("userId") int userId, Pageable pageable);
+
 
     @Query(value = "SELECT u FROM Event u WHERE u.user.id = :userId")
     Page<Event> findAllEventsWithUserId(@Param("userId") int userId, Pageable pageable);

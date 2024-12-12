@@ -40,6 +40,7 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
     private final TokenBlacklist tokenBlacklistFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -47,16 +48,15 @@ public class SecurityConfig {
 //                .cors(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        //  Define public routes
-                        .requestMatchers("/error/**").permitAll()
-                        .requestMatchers("/api/v1/auth/login").permitAll()
-                        .requestMatchers("/api/v1/auth/register").permitAll()
-//                        .requestMatchers("/api/v1/user").permitAll()
-//                        .requestMatchers("/api/v1/test/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/event").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/v1/event/**").permitAll()
-                        //  Define rest of the routes to be private
-                        .anyRequest().authenticated()
+                                //  Define public routes
+                                .requestMatchers("/error/**").permitAll()
+                                .requestMatchers("/api/v1/auth/login").permitAll()
+                                .requestMatchers("/api/v1/auth/register").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/event").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/event/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/review/average_stars").permitAll()
+                                //  Define rest of the routes to be private
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2
