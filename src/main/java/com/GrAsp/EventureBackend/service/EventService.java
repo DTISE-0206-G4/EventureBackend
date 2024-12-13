@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,18 +31,14 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public Page<Event> getEvents(Pageable pageable, String search, Integer userId) {
+    public Page<Event> getEvents(Pageable pageable, String search, Integer userId, String category) {
         if (userId != null) {
-            if (search != null && !search.isEmpty()) {
-                return eventRepository.findEventsWithSearchAndUserId(search, userId, pageable);
-            } else {
-                return eventRepository.findAllEventsWithUserId(userId, pageable);
-            }
+            return eventRepository.findEventsWithSearchAndUserId(search, userId, pageable);
         } else {
-            if (search != null && !search.isEmpty()) {
+            if (category == null || category.isEmpty()) {
                 return eventRepository.findEventsWithSearch(search, pageable);
             } else {
-                return eventRepository.findAllEvents(pageable);
+                return eventRepository.findEventsWithSearchAndCategory(search, category, pageable);
             }
         }
     }
@@ -88,46 +85,50 @@ public class EventService {
         }
     }
 
-    public Event updateEvent(CreateEventRequest event, Integer id) {
+    public Event updateEvent(CreateEventRequest event, Integer id, Integer userId) {
         try {
             Optional<Event> existingEvent = eventRepository.findById(id);
-            if (existingEvent.isPresent()) {
-                Event updatedEvent = existingEvent.get();
-                updatedEvent.setTitle(event.getTitle());
-                updatedEvent.setDescription(event.getDescription());
-                updatedEvent.setLocation(event.getLocation());
-                DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-                OffsetDateTime startTime = OffsetDateTime.parse(event.getStartTime(), formatter);
-                OffsetDateTime endTime = OffsetDateTime.parse(event.getEndTime(), formatter);
-                updatedEvent.setStartTime(startTime);
-                updatedEvent.setEndTime(endTime);
-                if (updatedEvent.getCategories().isEmpty() && !event.getCategories().isEmpty()) {
-                    for (Integer c : event.getCategories()) {
-                        Optional<Category> category = categoryRepository.findById(c);
-                        if (category.isPresent()) {
-                            updatedEvent.getCategories().add(category.get());
-                        } else {
-                            throw new RuntimeException("Event category not found");
-                        }
-                    }
-                } else if (!updatedEvent.getCategories().isEmpty() && event.getCategories().isEmpty()) {
-                    updatedEvent.setCategories(null);//set empty categories
-                } else if (!updatedEvent.getCategories().isEmpty()) {
-                    updatedEvent.getCategories().clear();
-                    for (Integer c : event.getCategories()) {
-                        Optional<Category> category = categoryRepository.findById(c);
-                        if (category.isPresent()) {
-                            updatedEvent.getCategories().add(category.get());
-                        } else {
-                            throw new RuntimeException("Event category not found");
-                        }
-                    }
-
-                }
-                return eventRepository.save(updatedEvent);
-            } else {
+            if (existingEvent.isEmpty()) {
                 throw new RuntimeException("Event not found");
             }
+
+            if (!Objects.equals(existingEvent.get().getUser().getId(), userId)) {
+                throw new RuntimeException("You don't have permission to update this event");
+            }
+            Event updatedEvent = existingEvent.get();
+            updatedEvent.setTitle(event.getTitle());
+            updatedEvent.setDescription(event.getDescription());
+            updatedEvent.setLocation(event.getLocation());
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+            OffsetDateTime startTime = OffsetDateTime.parse(event.getStartTime(), formatter);
+            OffsetDateTime endTime = OffsetDateTime.parse(event.getEndTime(), formatter);
+            updatedEvent.setStartTime(startTime);
+            updatedEvent.setEndTime(endTime);
+            if (updatedEvent.getCategories().isEmpty() && !event.getCategories().isEmpty()) {
+                for (Integer c : event.getCategories()) {
+                    Optional<Category> category = categoryRepository.findById(c);
+                    if (category.isPresent()) {
+                        updatedEvent.getCategories().add(category.get());
+                    } else {
+                        throw new RuntimeException("Event category not found");
+                    }
+                }
+            } else if (!updatedEvent.getCategories().isEmpty() && event.getCategories().isEmpty()) {
+                updatedEvent.setCategories(null);//set empty categories
+            } else if (!updatedEvent.getCategories().isEmpty()) {
+                updatedEvent.getCategories().clear();
+                for (Integer c : event.getCategories()) {
+                    Optional<Category> category = categoryRepository.findById(c);
+                    if (category.isPresent()) {
+                        updatedEvent.getCategories().add(category.get());
+                    } else {
+                        throw new RuntimeException("Event category not found");
+                    }
+                }
+
+            }
+            return eventRepository.save(updatedEvent);
+
         } catch (Exception e) {
             throw new RuntimeException("Can't update event, " + e.getMessage());
         }

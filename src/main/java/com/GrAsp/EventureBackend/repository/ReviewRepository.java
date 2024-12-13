@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByEventId(int id);
 
-    @Query("SELECT AVG(r.stars) FROM Review r WHERE r.event.user.id = :userId")
+    @Query("SELECT COALESCE(AVG(r.stars), 0.0) FROM Review r WHERE r.event.user.id = :userId")
     Double findAverageStarsByUserId(@Param("userId") Integer userId);
 
     Optional<Review> findReviewByUserIdAndEventId(Integer userId, Integer eventId);

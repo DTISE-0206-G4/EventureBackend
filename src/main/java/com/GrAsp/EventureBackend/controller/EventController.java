@@ -39,21 +39,18 @@ public class EventController {
     }
 
     @GetMapping("/datatable")
-    public ResponseEntity<?> getEventsDatatable(@RequestParam int draw,
-                                                @RequestParam int start,
+    public ResponseEntity<?> getEventsDatatable(@RequestParam int start,
                                                 @RequestParam int length,
                                                 @RequestParam(required = false) String search,
-                                                @RequestParam(required = false) String orderColumn,
-                                                @RequestParam(required = false) String orderDir,
-                                                @RequestParam(required = false) Integer userId) {
+                                                @RequestParam(required = false) Integer userId,
+                                                @RequestParam(required = false) String category) {
         int page = start / length;
-        Sort.Direction direction = Sort.Direction.fromString(orderDir != null ? orderDir : "asc");
-        Sort sort = Sort.by(direction, orderColumn != null ? orderColumn : "id");
+        Sort.Direction direction = Sort.Direction.fromString("desc");
+        Sort sort = Sort.by(direction, "id");
         Pageable pageable = PageRequest.of(page, length, sort);
-        Page<Event> eventPage = eventService.getEvents(pageable, search, userId);
+        Page<Event> eventPage = eventService.getEvents(pageable, search, userId, category);
         long totalRecords = eventService.count(userId);
         Map<String, Object> response = new HashMap<>();
-        response.put("draw", draw);
         response.put("recordsTotal", totalRecords);
         response.put("recordsFiltered", eventPage.getTotalElements());
         response.put("data", eventPage.getContent());
@@ -87,7 +84,12 @@ public class EventController {
     @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEvent(@PathVariable int id, @RequestBody CreateEventRequest event) {
-        Event updatedEvent = eventService.updateEvent(event, id);
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        Event updatedEvent = eventService.updateEvent(event, id, user.getId());
         return ApiResponse.successfulResponse("Event updated successfully", updatedEvent);
     }
 
