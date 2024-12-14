@@ -3,6 +3,7 @@ package com.GrAsp.EventureBackend.controller;
 import com.GrAsp.EventureBackend.common.response.ApiResponse;
 import com.GrAsp.EventureBackend.dto.TransactionRequest;
 import com.GrAsp.EventureBackend.model.Event;
+import com.GrAsp.EventureBackend.model.Role;
 import com.GrAsp.EventureBackend.model.Transaction;
 import com.GrAsp.EventureBackend.security.config.Claims;
 import com.GrAsp.EventureBackend.service.TransactionService;
@@ -35,6 +36,25 @@ public class TransactionController {
         return ApiResponse.successfulResponse("Transactions retrieved successfully", transactionService.getTransactionsByTicketId(ticketId)); // Add this line
     }
 
+    @GetMapping("/event")
+    public ResponseEntity<?> getTransactionsForOrganizer(@RequestParam Integer eventId, @RequestParam int start, @RequestParam int length) {
+        String email = Claims.getEmailFromJwt();
+        var user = userService.getProfile(email);
+        if (user == null) {
+            return ApiResponse.failedResponse("User not found");
+        }
+        int page = start / length;
+        Sort.Direction direction = Sort.Direction.fromString("desc");
+        Sort sort = Sort.by(direction, "id");
+        Pageable pageable = PageRequest.of(page, length, sort);
+        Page<Transaction> transactionDatatable = transactionService.getTransactionsForOrganizer(pageable, user.getId(), eventId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("recordsFiltered", transactionDatatable.getTotalElements());
+        response.put("data", transactionDatatable.getContent());
+
+        return ApiResponse.successfulResponse("Transactions retrieved successfully", response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getTransaction(@PathVariable Integer id) {
         String email = Claims.getEmailFromJwt();
@@ -46,8 +66,16 @@ public class TransactionController {
         if (transaction.isEmpty()) {
             return ApiResponse.failedResponse("Transaction not found");
         }
-        if(!Objects.equals(transaction.get().getUser().getId(), user.getId())){
-            return ApiResponse.failedResponse("Transaction not found");
+        for (Role role : user.getRoles()) {
+            if ("ATTENDEE".equals(role.getName())) {
+                if (!Objects.equals(transaction.get().getUser().getId(), user.getId())) {
+                    return ApiResponse.failedResponse("Transaction not found");
+                }
+            } else if ("ORGANIZER".equals(role.getName())) {
+                if (!Objects.equals(transaction.get().getTicket().getEvent().getUser().getId(), user.getId())) {
+                    return ApiResponse.failedResponse("Transaction not found");
+                }
+            }
         }
         return ApiResponse.successfulResponse("Transaction retrieved successfully", transaction.get()); // Add this line
     }
@@ -86,7 +114,7 @@ public class TransactionController {
         }
 
         log.info(transactionRequest.getEventDiscounts().toString());
-        return ApiResponse.successfulResponse("Transaction created successfully", transactionService.saveTransaction(transactionRequest,user.getId())); // Add this line
+        return ApiResponse.successfulResponse("Transaction created successfully", transactionService.saveTransaction(transactionRequest, user.getId())); // Add this line
     }
 
 }

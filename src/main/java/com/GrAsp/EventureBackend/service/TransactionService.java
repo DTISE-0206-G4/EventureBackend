@@ -40,6 +40,10 @@ public class TransactionService {
         return transactionRepository.findAllTransactionsWithUserId(userId, pageable);
     }
 
+    public Page<Transaction> getTransactionsForOrganizer(Pageable pageable, Integer userId,Integer eventId) {
+        return transactionRepository.findAllTransactionsWithOrganizerId(userId,eventId, pageable);
+    }
+
     @Transactional
     public Transaction saveTransaction(TransactionRequest req, Integer userId) {
         Transaction transaction = new Transaction();

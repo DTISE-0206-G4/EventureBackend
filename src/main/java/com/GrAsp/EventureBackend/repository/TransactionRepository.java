@@ -32,6 +32,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 """)
     Page<Transaction> findAllTransactionsWithUserId(@Param("userId") int userId, Pageable pageable);
 
+    @Query("""
+    SELECT t 
+    FROM Transaction t
+    JOIN t.ticket tk
+    JOIN tk.event e
+    WHERE e.user.id = :userId
+    AND e.id = :eventId
+""")
+    Page<Transaction> findAllTransactionsWithOrganizerId(@Param("userId") int userId,@Param("eventId") int eventId, Pageable pageable);
+
     @Query(value = "SELECT " +
             "SUM(t.total_price) AS dailyRevenue, " +
             "COUNT(t) AS count, " +
