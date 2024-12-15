@@ -72,6 +72,7 @@ public class Event {
     @Column(name = "location", nullable = false, length = Integer.MAX_VALUE)
     private String location;
 
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "event_categories", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
@@ -82,6 +83,10 @@ public class Event {
     @OneToMany(mappedBy = "event")
     @JsonIgnoreProperties("event")
     private Set<Ticket> tickets;
+
+    @OneToMany(mappedBy = "event")
+    @JsonIgnoreProperties("event")
+    private Set<EventDiscount> eventDiscounts;
 
     @OneToMany(mappedBy = "event")
     @JsonIgnoreProperties("event")
@@ -98,6 +103,10 @@ public class Event {
 
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
+
+    @Size(max = 1024)
+    @Column(name = "image_url", length = 1024)
+    private String imageUrl;
 
 
     @PrePersist

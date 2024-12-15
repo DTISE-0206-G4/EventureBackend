@@ -98,6 +98,7 @@ public class EventService {
             Event updatedEvent = existingEvent.get();
             updatedEvent.setTitle(event.getTitle());
             updatedEvent.setDescription(event.getDescription());
+            updatedEvent.setImageUrl(event.getImageUrl());
             updatedEvent.setLocation(event.getLocation());
             DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
             OffsetDateTime startTime = OffsetDateTime.parse(event.getStartTime(), formatter);
