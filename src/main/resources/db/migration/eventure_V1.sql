@@ -49,9 +49,10 @@ CREATE TABLE "public"."event" (
                                   "start_time" TIMESTAMP WITH TIME ZONE NOT NULL,
                                   "end_time" TIMESTAMP WITH TIME ZONE NOT NULL,
                                   "location" TEXT NOT NULL,
+                                  "image_url" CHARACTER VARYING(10224),
                                   "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                  "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                   "deleted_at" TIMESTAMP WITH TIME ZONE,
+                                  "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                   PRIMARY KEY ( "id" )
 )
     WITH ( OIDS=FALSE );

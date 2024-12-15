@@ -20,12 +20,14 @@ public class CreateEventRequest {
     private String startTime;
     private String endTime;
     private String location;
+    private String imageUrl;
     private Set<Integer> categories;
     public Event toEntity() {
         Event event = new Event();
         event.setTitle(title);
         event.setDescription(description);
         event.setLocation(location);
+        event.setImageUrl(imageUrl);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         OffsetDateTime startTime = OffsetDateTime.parse(this.startTime, formatter);
         OffsetDateTime endTime = OffsetDateTime.parse(this.endTime, formatter);

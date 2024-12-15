@@ -14,6 +14,7 @@ public class TokenService {
     public enum TokenType {
         ACCESS, REFRESH
     }
+
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
     private final UserRepository usersRepository;
@@ -47,6 +48,7 @@ public class TokenService {
                 .claim("scope", scope)
                 .claim("userId", user.getId())
                 .claim("type", tokenType.name())
+                .claim("profileImage", user.getProfileImage() == null || user.getProfileImage().isEmpty() ? "" : user.getProfileImage())
                 .build();
 // If you want to use shared secret, use line below
         JwsHeader jwsHeader = JwsHeader.with(() -> "HS256").build();
@@ -67,6 +69,7 @@ public class TokenService {
                 .claim("scope", jwt.getClaimAsString("scope"))
                 .claim("userId", jwt.getClaimAsString("userId"))
                 .claim("type", TokenType.ACCESS.name())
+                .claim("profileImage", jwt.getClaimAsString("profileImage"))
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(() -> "HS256").build();
