@@ -137,13 +137,16 @@ public class EventService {
     public void deleteEvent(Integer id) {
         try {
             Optional<Event> event = eventRepository.findById(id);
-            if (event.isPresent()) {
-                Event deletedEvent = event.get();
-                deletedEvent.setDeletedAt(OffsetDateTime.now());
-                eventRepository.save(deletedEvent);
-            } else {
+            if (event.isEmpty()) {
                 throw new RuntimeException("Event not found");
             }
+            if (!event.get().getTickets().isEmpty()) {
+                throw new RuntimeException("Event has tickets, can't delete");
+            }
+            Event deletedEvent = event.get();
+            deletedEvent.setDeletedAt(OffsetDateTime.now());
+            eventRepository.save(deletedEvent);
+
         } catch (Exception e) {
             throw new RuntimeException("Can't delete event, " + e.getMessage());
         }

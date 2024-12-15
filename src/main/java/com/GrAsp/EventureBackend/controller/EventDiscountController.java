@@ -2,7 +2,10 @@ package com.GrAsp.EventureBackend.controller;
 
 import com.GrAsp.EventureBackend.common.response.ApiResponse;
 import com.GrAsp.EventureBackend.dto.CreateEventDiscountRequest;
+import com.GrAsp.EventureBackend.dto.CreateTicketRequest;
+import com.GrAsp.EventureBackend.dto.TicketDTO;
 import com.GrAsp.EventureBackend.model.EventDiscount;
+import com.GrAsp.EventureBackend.model.Ticket;
 import com.GrAsp.EventureBackend.service.EventDiscountService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +18,16 @@ import org.springframework.web.bind.annotation.*;
 public class EventDiscountController {
     private final EventDiscountService eventDiscountService;
 
+//    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
     @GetMapping()
     public ResponseEntity<?> getEventDiscounts(@RequestParam(required = false) Integer eventId) {
         return ApiResponse.successfulResponse("Event discounts retrieved successfully", eventDiscountService.getAllEventDiscounts(eventId));
+    }
+
+//    @PreAuthorize("hasAuthority('SCOPE_ATTENDEE')")
+    @GetMapping("/public")
+    public ResponseEntity<?> getEventDiscountsForAttendee(@RequestParam(required = false) Integer eventId) {
+        return ApiResponse.successfulResponse("Event discounts retrieved successfully", eventDiscountService.getAllEventDiscountsForAttendee(eventId));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
@@ -35,6 +45,18 @@ public class EventDiscountController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEventDiscount(@PathVariable Integer id, @RequestBody CreateEventDiscountRequest req) {
         return ApiResponse.successfulResponse("Event discount updated successfully", eventDiscountService.updateEventDiscount(req, id));
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
+    @PostMapping("/{id}/release")
+    public ResponseEntity<?> releaseEventDiscount(@PathVariable int id) {
+        return ApiResponse.successfulResponse("Ticket released successfully", eventDiscountService.releaseDiscount(id));
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
+    @PostMapping("/{id}/close")
+    public ResponseEntity<?> closeEventDiscount(@PathVariable int id) {
+        return ApiResponse.successfulResponse("Ticket closed successfully", eventDiscountService.closeDiscount(id));
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
