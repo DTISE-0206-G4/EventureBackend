@@ -65,6 +65,14 @@ public class TransactionService {
             throw new RuntimeException("Ticket sold out");
         }
 
+        if (!ticket.get().getIsReleased()){
+            throw new RuntimeException("Ticket not released");
+        }
+
+        if (ticket.get().getIsClosed()){
+            throw new RuntimeException("Ticket is closed");
+        }
+
         //event discount
         Double totalPrice = ticket.get().getPrice();
         Optional<Transaction> existingTransaction = transactionRepository.findTransactionByTicketIdAndUserId(req.getTicketId(), userId);

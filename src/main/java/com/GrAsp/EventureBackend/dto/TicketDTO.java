@@ -18,6 +18,8 @@ public class TicketDTO {
     private Double price;
     private Integer availableSeat;
     private Integer soldSeat;
+    private Boolean isReleased;
+    private Boolean isClosed;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private OffsetDateTime deletedAt;
@@ -29,6 +31,8 @@ public class TicketDTO {
         this.price = ticket.getPrice();
         this.availableSeat = ticket.getAvailableSeat();
         this.soldSeat = ticket.getSoldSeat();
+        this.isReleased = ticket.getIsReleased();
+        this.isClosed = ticket.getIsClosed();
         this.createdAt = ticket.getCreatedAt();
         this.updatedAt = ticket.getUpdatedAt();
         this.deletedAt = ticket.getDeletedAt();
