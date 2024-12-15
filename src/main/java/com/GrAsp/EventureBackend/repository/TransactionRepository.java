@@ -21,7 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     Optional<Transaction> findTransactionByTicketIdAndUserId(int ticketId, int userId);
 
-    Optional<Transaction> findTransactionByUserIdAndTicketEvent_Id(int userId, Integer eventId);
+    Optional<Transaction> findTransactionByUserIdAndTicket_Event_Id(int userId, Integer eventId);
 
     @Query("""
     SELECT t 

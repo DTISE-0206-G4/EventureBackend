@@ -80,7 +80,7 @@ public class TransactionService {
             throw new RuntimeException("Ticket already bought by user");
         }
 
-        existingTransaction = transactionRepository.findTransactionByUserIdAndTicketEvent_Id(userId, ticket.get().getEvent().getId());
+        existingTransaction = transactionRepository.findTransactionByUserIdAndTicket_Event_Id(userId, ticket.get().getEvent().getId());
         if (existingTransaction.isPresent()) {
             throw new RuntimeException("Ticket already bought for this event");
         }
