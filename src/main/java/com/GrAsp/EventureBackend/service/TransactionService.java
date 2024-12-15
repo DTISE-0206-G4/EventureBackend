@@ -94,6 +94,10 @@ public class TransactionService {
                 throw new RuntimeException("Event discount is used up");
             }
 
+            if(eventDiscount.get().getExpiredAt().isBefore(OffsetDateTime.now())) {
+                throw new RuntimeException("Event discount expired");
+            }
+
             //todo +1 used eventDiscount
             EventDiscount updatedEventDiscount = eventDiscount.get();
             updatedEventDiscount.setUsed(eventDiscount.get().getUsed() + 1);

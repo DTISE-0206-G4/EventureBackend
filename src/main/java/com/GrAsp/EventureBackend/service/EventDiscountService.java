@@ -25,6 +25,14 @@ public class EventDiscountService {
         }
     }
 
+    public List<EventDiscount> getAllEventDiscountsForAttendee(@RequestParam Integer eventId) {
+        if (eventId != null) {
+            return eventDiscountRepository.findEventDiscountsByEventIdAndExpiredAtAfterAndIsReleasedAndIsClosed(eventId,OffsetDateTime.now(),true,false);
+        } else {
+            throw new RuntimeException("Event ID is required");
+        }
+    }
+
     public Optional<EventDiscount> getEventDiscountByCode(@RequestParam String code) {
         return eventDiscountRepository.findEventDiscountByCode(code);
     }
@@ -44,16 +52,49 @@ public class EventDiscountService {
     public EventDiscount updateEventDiscount(CreateEventDiscountRequest req, Integer id) {
         try {
             Optional<EventDiscount> existingEvent = eventDiscountRepository.findById(id);
-            if (existingEvent.isPresent()) {
-                EventDiscount updatedEvent = existingEvent.get();
-                updatedEvent.setTitle(req.getTitle());
-                updatedEvent.setDescription(req.getDescription());
-                updatedEvent.setCode(req.getCode());
-                updatedEvent.setAmount(req.getAmount());
-                updatedEvent.setIsPercentage(req.getIsPercentage());
-                updatedEvent.setAvailable(req.getAvailable());
-                updatedEvent.setIsReleased(req.getIsReleased());
-                updatedEvent.setIsClosed(req.getIsClosed());
+            if (existingEvent.isEmpty()) {
+                throw new RuntimeException("Event discount not found with id " + id);
+            }
+            if(existingEvent.get().getIsReleased()){
+                throw new RuntimeException("Event discount is already released.");
+            }
+            EventDiscount updatedEvent = existingEvent.get();
+            updatedEvent.setTitle(req.getTitle());
+            updatedEvent.setDescription(req.getDescription());
+            updatedEvent.setCode(req.getCode());
+            updatedEvent.setAmount(req.getAmount());
+            updatedEvent.setIsPercentage(req.getIsPercentage());
+            updatedEvent.setAvailable(req.getAvailable());
+            updatedEvent.setIsReleased(req.getIsReleased());
+            updatedEvent.setIsClosed(req.getIsClosed());
+            return eventDiscountRepository.save(updatedEvent);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Can't save event discount, " + e.getMessage());
+        }
+    }
+
+    public EventDiscount releaseDiscount(Integer id) {
+        try {
+            Optional<EventDiscount> eventDiscount = eventDiscountRepository.findById(id);
+            if (eventDiscount.isPresent()) {
+                EventDiscount updatedEvent = eventDiscount.get();
+                updatedEvent.setIsReleased(true);
+                return eventDiscountRepository.save(updatedEvent);
+            } else {
+                throw new RuntimeException("Can't find event discount with id " + id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Can't save event discount, " + e.getMessage());
+        }
+    }
+
+    public EventDiscount closeDiscount(Integer id) {
+        try {
+            Optional<EventDiscount> eventDiscount = eventDiscountRepository.findById(id);
+            if (eventDiscount.isPresent()) {
+                EventDiscount updatedEvent = eventDiscount.get();
+                updatedEvent.setIsClosed(true);
                 return eventDiscountRepository.save(updatedEvent);
             } else {
                 throw new RuntimeException("Can't find event discount with id " + id);
@@ -66,12 +107,12 @@ public class EventDiscountService {
     public void deleteEventDiscount(Integer id) {
         try {
             Optional<EventDiscount> eventDiscount = eventDiscountRepository.findById(id);
-            if (eventDiscount.isPresent()) {
+            if (eventDiscount.isPresent() && !eventDiscount.get().getIsReleased()) {
                 EventDiscount deletedEvent = eventDiscount.get();
                 deletedEvent.setDeletedAt(OffsetDateTime.now());
                 eventDiscountRepository.save(deletedEvent);
             } else {
-                throw new RuntimeException("Event discount not found");
+                throw new RuntimeException("Event discount not found or already released.");
             }
         } catch (Exception e) {
             throw new RuntimeException("Can't delete event discount, " + e.getMessage());
