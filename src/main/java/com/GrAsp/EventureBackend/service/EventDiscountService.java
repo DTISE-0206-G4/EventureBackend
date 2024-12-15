@@ -48,7 +48,7 @@ public class EventDiscountService {
         try {
             EventDiscount newEventDiscount= req.toEntity();
             newEventDiscount.setEvent(eventRepository.findById(req.getEventId()).orElse(null));
-            return eventDiscountRepository.save(req.toEntity());
+            return eventDiscountRepository.save(newEventDiscount);
         } catch (Exception e) {
             throw new RuntimeException("Can't save event discount, " + e.getMessage());
         }
