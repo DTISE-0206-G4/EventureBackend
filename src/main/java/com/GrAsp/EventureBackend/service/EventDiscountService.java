@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +73,9 @@ public class EventDiscountService {
             updatedEvent.setAvailable(req.getAvailable());
             updatedEvent.setIsReleased(req.getIsReleased());
             updatedEvent.setIsClosed(req.getIsClosed());
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+            OffsetDateTime expiredAt = OffsetDateTime.parse(req.getExpiredAt(), formatter);
+            updatedEvent.setExpiredAt(expiredAt);
             return eventDiscountRepository.save(updatedEvent);
 
         } catch (Exception e) {

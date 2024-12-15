@@ -49,7 +49,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIncludeProperties({"id","name","email"})
+    @JsonIncludeProperties({"id","name","email","profileImage"})
     private User user;
 
     @Size(max = 255)
