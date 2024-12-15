@@ -1,5 +1,7 @@
 package com.GrAsp.EventureBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,9 +30,15 @@ public class EventDiscount {
 //    @JoinColumn(name = "event_id", nullable = false)
 //    private Event event;
 
-    @NotNull
-    @Column(name = "event_id", nullable = false)
-    private Integer eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+//    @JsonIgnore
+    @JsonIncludeProperties({"id","title","startTime","endTime"})
+    private Event event;
+
+//    @NotNull
+//    @Column(name = "event_id", nullable = false)
+//    private Integer eventId;
 
     @Size(max = 255)
     @NotNull
