@@ -76,7 +76,7 @@ public class TicketController {
     public ResponseEntity<?> closeTicket(@PathVariable int id) {
         Ticket ticket = ticketService.closeTicket(id);
         TicketDTO ticketDTO = new TicketDTO(ticket);
-        return ApiResponse.successfulResponse("Ticket closed successfully", ticketService.closeTicket(id));
+        return ApiResponse.successfulResponse("Ticket closed successfully", ticketDTO);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_ORGANIZER')")
