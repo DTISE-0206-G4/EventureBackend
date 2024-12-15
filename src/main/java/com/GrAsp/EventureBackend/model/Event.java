@@ -86,6 +86,10 @@ public class Event {
 
     @OneToMany(mappedBy = "event")
     @JsonIgnoreProperties("event")
+    private Set<EventDiscount> eventDiscounts;
+
+    @OneToMany(mappedBy = "event")
+    @JsonIgnoreProperties("event")
     @JsonIgnore
     private Set<Review> reviews;
 

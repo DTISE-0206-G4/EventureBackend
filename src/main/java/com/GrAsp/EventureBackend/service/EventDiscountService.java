@@ -3,7 +3,9 @@ package com.GrAsp.EventureBackend.service;
 import com.GrAsp.EventureBackend.dto.CreateEventDiscountRequest;
 import com.GrAsp.EventureBackend.model.Event;
 import com.GrAsp.EventureBackend.model.EventDiscount;
+import com.GrAsp.EventureBackend.model.Ticket;
 import com.GrAsp.EventureBackend.repository.EventDiscountRepository;
+import com.GrAsp.EventureBackend.repository.EventRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +18,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class EventDiscountService {
     public final EventDiscountRepository eventDiscountRepository;
+    private final EventRepository eventRepository;
 
     public List<EventDiscount> getAllEventDiscounts(@RequestParam Integer eventId) {
         if (eventId != null) {
@@ -43,6 +46,8 @@ public class EventDiscountService {
 
     public EventDiscount addEventDiscount(CreateEventDiscountRequest req) { // Complete this method
         try {
+            EventDiscount newEventDiscount= req.toEntity();
+            newEventDiscount.setEvent(eventRepository.findById(req.getEventId()).orElse(null));
             return eventDiscountRepository.save(req.toEntity());
         } catch (Exception e) {
             throw new RuntimeException("Can't save event discount, " + e.getMessage());

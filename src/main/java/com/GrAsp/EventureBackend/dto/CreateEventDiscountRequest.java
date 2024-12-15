@@ -25,7 +25,7 @@ public class CreateEventDiscountRequest {
 
     public EventDiscount toEntity() {
         EventDiscount eventDiscount = new EventDiscount();
-        eventDiscount.setEventId(eventId);
+//        eventDiscount.setEventId(eventId);
         eventDiscount.setTitle(title);
         eventDiscount.setDescription(description);
         eventDiscount.setCode(code);
